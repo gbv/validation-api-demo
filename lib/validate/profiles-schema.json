@@ -5,22 +5,30 @@
     "type": "object",
     "properties": {
       "id": {
+        "description": "Unique identifier of the profile",
         "$ref": "#/definitions/id"
       },
       "title": {
+        "description": "Name of the profile",
         "type": "string"
       },
       "description": {
+        "description": "Short description(s) of the profile, indexed by language tag (e.g. 'en')",
         "type": "object",
         "propertyNames": {
           "pattern": "^[a-z]{2,}$"
         }
       },
       "url": {
+        "description": "URL of a document about the profile",
         "$ref": "#/definitions/url"
       },
       "checks": {
-        "type": "array"
+        "description": "List of checks to be executed when validating against this profile",
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/check"
+        }
       }
     },
     "required": ["id"],
@@ -34,6 +42,28 @@
       "type": "string",
       "format": "uri",
       "pattern": "^https?://"
+    },
+    "check": {
+      "oneOf": [
+        {
+          "description": "Identifier of another profile or a build-in data format",
+          "$ref": "#/definitions/id"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "schema": {
+              "description": "Schema file or URL",
+              "type": "string"
+            },
+            "language": {
+              "description": "Schema language",
+              "$comment": "TODO: Add regex, preg, xsd, schematron, avram...",
+              "enum": [ "jsonschema" ]
+            }
+          }
+        }
+      ]
     }
   }
 }

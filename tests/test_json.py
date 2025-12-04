@@ -5,7 +5,7 @@ def test_json():
     def fail(data, error):
         try:
             parseJSON(data)
-            assert 0 == "ValidationError should have been thrown!"
+            assert 0 == "ValidationError should have been thrown!"  # pragma: no cover
         except ValidationError as e:
             assert e.to_dict() == error
 

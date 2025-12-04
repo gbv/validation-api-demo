@@ -1,5 +1,15 @@
 name: Test
 
+on:
+  push:
+    paths-ignore:
+      - '.*'
+      - '**.md'
+  pull_requests:
+    paths-ignore:
+      - '.*'
+      - '**.md'
+
 on: [push, pull_request]
 
 jobs:

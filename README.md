@@ -26,17 +26,16 @@ Start the the web application with default [configuration](#configuration) on po
 
 A Docker image is automatically build on GitHub.
 
-
 Run from recent Docker image:
 
 ~~~sh
-docker run --rm -p 7007:7007 ghcr.io/nfdi4objects/validation-api-demo
+docker run --rm -p 7007:7007 ghcr.io/gbv/validation-api-demo
 ~~~
 
 Same but with local config file (which must exist):
 
 ~~~sh
-test -f config.json && docker run --rm -p 7007:7007 --volume ./config.json:/app/config.json ghcr.io/nfdi4objects/validation-api-demo
+test -f config.json && docker run --rm -p 7007:7007 --volume ./config.json:/app/config.json ghcr.io/gbv/validation-api-demo
 ~~~
 
 Run from locally built Docker image:
@@ -47,6 +46,8 @@ Run from locally built Docker image:
 ## Configuration
 
 If local file `config.json` exist, it is used for configuration, otherwise [default configuration](config.default.json).
+
+Configuration must contain key `profiles` with a list of profile objects, each having a unique `id` and a list of `checks`. See [profiles configuration JSON Schema](lib/validate/profiles-schema.json) for details.
 
 ## Development
 
