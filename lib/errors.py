@@ -15,9 +15,5 @@ class NotFound(ApiError):
     code = 404
 
 
-class NotAllowed(ApiError):
-    code = 403
-
-
 class ServerError(ApiError):
     code = 500

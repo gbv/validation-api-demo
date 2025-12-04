@@ -1,0 +1,10 @@
+{
+  "port": 7007,
+  "profiles": [
+    {
+      "id": "json",
+      "checks": ["json"]
+    }
+  ]
+}
+

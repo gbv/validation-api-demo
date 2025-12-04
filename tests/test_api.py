@@ -7,11 +7,17 @@ import tempfile
 
 from app import app, init
 
-# cwd = Path().cwd()
+
+def expect_fine(client, method, path, result=None, code=200):
+    res = client.open(path, method=method)
+    assert res.status_code == code
+    if result:
+        assert res.get_json() == result
+    return res.get_json()
 
 
-def expect_error(client, method, path, json=None, error=None, code=400):
-    res = client.open(path, method=method, json=json)
+def expect_fail(client, method, path, error=None, code=400, **kwargs):
+    res = client.open(path, method=method, **kwargs)
     assert res.status_code == code
     if error:
         if type(error) is str:
@@ -33,18 +39,51 @@ def stage():
 def client(stage):
     app.testing = True
 
-    init(title="Validation Service Test", stage=stage)
+    profiles = [{
+        "id": "json",
+        "checks": ["json"]
+    }]
+    init(title="Validation Service Test", stage=stage, profiles=profiles)
 
     with app.test_client() as client:
-        def fail(*args, **kwargs):
-            return expect_error(client, *args, **kwargs)
-        yield client, fail  # , stage
+        setattr(client, 'fail', lambda *args, **kw: expect_fail(client, *args, **kw))
+        setattr(client, 'fine', lambda *args, **kw: expect_fine(client, *args, **kw))
+        setattr(client, 'stage', stage)
+        yield client
 
 
-def test_api(client):
-    client, fail = client
-
-    # start without collections
+def test_html(client):
     resp = client.get('/')
     assert resp.status_code == 200
     assert b"Validation Service Test" in resp.data
+
+
+def test_api(client):
+
+    client.fine('GET', '/profiles', [
+        {"id": "json"}
+    ])
+
+    client.fail('GET', '/validate/xxx?data=123', code=404,
+                error="Profile not found: xxx")
+
+    client.fail('GET', '/validate/json', code=400,
+                error="Expect exactely one query parameter: data, url, or file")
+
+    client.fail('GET', '/validate/json?url=http://example.org/&data=123', code=400,
+                error="Expect exactely one query parameter: data, url, or file")
+
+    client.fine('GET', '/validate/json?data={}')
+
+    client.fine('GET', '/validate/json?data={', [{
+        'message': 'Expecting property name enclosed in double quotes',
+        'position': {'line': '1', 'linecol': '1:2', 'offset': '1'}} 
+    ])
+
+
+# TODO: test file upload
+"""
+def test_post_validate_profile_upload(client):
+    data = {'file': (io.BytesIO(b"file content"), 'test.txt')}
+    response = client.post('/validate/profileA', content_type='multipart/form-data', data=data)
+"""
