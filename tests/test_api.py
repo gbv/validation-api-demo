@@ -2,12 +2,12 @@ import pytest
 import tempfile
 from pathlib import Path
 import io
-# from unittest.mock import patch
+import json
 from app import app, init
 
 
-def expect_fine(client, method, path, result=None, code=200):
-    res = client.open(path, method=method)
+def expect_fine(client, method, path, result=None, code=200, **kwargs):
+    res = client.open(path, method=method, **kwargs)
     assert res.status_code == code
     if result:
         assert res.get_json() == result
@@ -98,5 +98,15 @@ def test_validate_upload(client):
 
     data = {'file': (io.BytesIO(b"{}"), 'test.json')}
 
-    res = client.post('/json/validate', content_type='multipart/form-data', data=data)
-    assert res.status_code == 200
+    client.fine('POST', '/json/validate', content_type='multipart/form-data', data=data)
+
+    client.fine('POST', '/json/validate', data=b"{}")
+
+    client.fine('POST', '/json/validate', data=b"[1,2", result=[{
+        "message": "Expecting ',' delimiter",
+        "position": {
+            "line": "1",
+            "linecol": "1:5",
+            "offset": "4"
+        }
+    }])

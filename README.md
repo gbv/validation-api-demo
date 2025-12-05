@@ -7,7 +7,7 @@
 
 ## Table of Contents
 
-- [Usage](#usage)
+- [Installation](#installation)
   - [From sources](#from-sources)
   - [With Docker](#with-docker)
 - [Configuration](#configuration)
@@ -19,9 +19,9 @@
 - [Contributing](#contributing)
 - [License](#license)
 
-## Usage
+## Installation
 
-Start the the web application with default [configuration](#configuration) on port 7007.
+The web application is started on <http://localhost:7007> by default.
 
 ### From sources
 
@@ -53,7 +53,7 @@ docker run --rm -p 7007:7007 validator
 
 ## Configuration
 
-If local file `config.json` exist, it is used for configuration, otherwise [default configuration](config.default.json).
+If local file `config.json` exist, it is used for configuration, otherwise [default configuration](config.default.json) is used.
 
 Configuration must contain key `profiles` with a list of profile objects, each having a unique `id` and a list of `checks`. See [profiles configuration JSON Schema](lib/validate/profiles-schema.json) for details. Additional config fields include:
 
@@ -65,9 +65,9 @@ Configuration must contain key `profiles` with a list of profile objects, each h
 
 ## API
 
-The webservice provides one endpoint to list application profiles and one **Data Validation API** endpoint for each profile to validate data (with HTTP GET or HTTP POST, so two endpoints are listed below).
+The webservice provides one endpoint to [list application profiles](#get-profiles) and one **Data Validation API** endpoint for each profile to validate data (with either HTTP GET or HTTP POST, listed as two endpoints below).
 
-The Data Validation API is still being specified, so details may change. The response format is being specified as **[Data Validation Error Format]**.
+Details of Data Validation API are still being specified, so details may change. The core response format is being specified as **[Data Validation Error Format]**.
 
 #### GET /profiles
 
@@ -80,6 +80,23 @@ Validate data against an application profile and return a list of errors in [Dat
 - `data` as string
 - `url` to be downloaded from an URL (if the service is configured with `downloads` directory)
 - `file` to be read from a local file in the stage directory of the server (if the service is configured with `stage` directory)
+
+Status code is always 200 if validation could be executed, no matter whether errors have been found or not.
+
+For example validating the string `[1,2` at default profile `json` (`curl http://localhost:7007/json/validate -d '[1,2'`) results in this validation response:
+
+~~~json
+[
+  {
+    "message": "Expecting ',' delimiter",
+    "position": {
+      "line": "1",
+      "linecol": "1:5",
+      "offset": "4"
+    }
+  }
+]
+~~~
 
 #### POST /{profile}/validate
 

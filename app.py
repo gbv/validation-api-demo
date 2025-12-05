@@ -1,3 +1,4 @@
+import sys
 from flask import Flask, jsonify, render_template, request
 from waitress import serve
 from lib import ValidationService
@@ -50,7 +51,7 @@ def get_profiles():
 
 
 @app.route('/<profile>/validate', methods=['GET', 'POST'])
-def get_validate(profile):
+def validate(profile):
     try:
         service.profile(profile)
     except Exception:
@@ -59,22 +60,21 @@ def get_validate(profile):
     if request.method == 'GET':
         params = ['data', 'url', 'file']
         args = dict([(k, request.args.get(k)) for k in params if k in request.args])
-
-        try:
-            return service.validate(profile, **args)
-        except ValueError as e:
-            raise ApiError(str(e))
-        except LookupError as e:
-            raise NotFound(str(e))
-
     else:
-        if request.content_type and request.content_type.startswith('multipart/form-data'):
+        mime = request.content_type or ''
+        if mime == 'multipart/form-data':
             if 'file' not in request.files:
                 raise ApiError("Missing file upload")
-            data = request.files['file'].stream
+            args = {"data": request.files['file'].stream}
         else:
-            data = request.data
-        return service.validate(profile, data=data)
+            args = {"data": request.get_data()}
+
+    try:
+        return service.validate(profile, **args)
+    except ValueError as e:
+        raise ApiError(str(e))
+    except LookupError as e:
+        raise NotFound(str(e))
 
 
 if __name__ == '__main__':  # pragma: no cover
