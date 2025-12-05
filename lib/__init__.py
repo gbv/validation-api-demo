@@ -1,5 +1,4 @@
-from .errors import ApiError, NotFound, ServerError
 from .validate import Validator, ValidationError, validateJSON, parseJSON
+from .service import ValidationService
 
-__all__ = [Validator, ValidationError, validateJSON, parseJSON,
-           ApiError, NotFound, ServerError]
+__all__ = [ValidationService, Validator, ValidationError, validateJSON, parseJSON]

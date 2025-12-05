@@ -1,96 +1,83 @@
 from flask import Flask, jsonify, render_template, request
 from waitress import serve
-from lib import Validator, ApiError, NotFound, ValidationError
+from lib import ValidationService
 from pathlib import Path
 import json
 import argparse
-import os
 
 app = Flask(__name__)
 app.json.compact = False
 
-validator = None
+service = None
 
 
-def init(**config):
-    global validator
+def init(config):
+    global service
 
-    if config.get("debug", False):
-        app.debug = True
-
+    app.debug = config.get("debug", False)
     app.config['title'] = config.get('title', 'Validation Service')
-    app.config['stage'] = config.get('stage', os.getenv('STAGE', 'stage'))
 
-    validator = Validator(**config)
+    service = ValidationService(**config)
+
+
+class ApiError(Exception):
+    code = 400
+
+
+class NotFound(ApiError):
+    code = 404
 
 
 @app.errorhandler(ApiError)
 def handle_apierror(e):
-    return jsonify(e.to_dict()), type(e).code
+    body = {
+        "code": type(e).code,
+        "message": str(e)
+    }
+    return jsonify(body), body['code']
 
-
-@app.errorhandler(ValidationError)
-def handle_validationerror(e):
-    e = e.to_dict()
-    e["code"] = 400
-    return jsonify(e), 400
+# TODO: handle internal server errors
 
 
 @app.route('/')
 def get_index():
     return render_template('index.html', **app.config)
 
-# TODO: favicon
-# route('GET', '/icon.png', lambda: send_file("static/nfdi4objects-logo.png"))
-
 
 @app.route('/profiles')
 def get_profiles():
-    return validator.profiles_metadata()
+    return service.profiles()
 
 
-def profile_defined(profile):
+@app.route('/<profile>/validate', methods=['GET', 'POST'])
+def get_validate(profile):
     try:
-        validator.profile(profile)
-    except KeyError:
+        service.profile(profile)
+    except Exception:
         raise NotFound(f"Profile not found: {profile}")
 
+    if request.method == 'GET':
+        params = ['data', 'url', 'file']
+        args = dict([(k, request.args.get(k)) for k in params if k in request.args])
 
-def validate(profile, data):
-    errors = []
-    try:
-        validator.execute(profile, data)
-    except ValidationError as e:
-        errors.append(e.to_dict())
-    return errors
+        try:
+            return service.validate(profile, **args)
+        except ValueError as e:
+            raise ApiError(str(e))
+        except LookupError as e:
+            raise NotFound(str(e))
 
-
-@app.route('/validate/<profile>')
-def get_validate(profile):
-    profile_defined(profile)
-    params = dict([(k, request.args.get(k)) for k in ['file', 'url', 'data'] if k in request.args])
-    if len(params) != 1:
-        raise ApiError("Expect exactely one query parameter: data, url, or file")
-    data = params['data']  # TODO: support file and URL
-    return validate(profile, data)
-
-
-@app.route('/validate/<profile>', methods=['POST'])
-def post_validate(profile):
-    profile_defined(profile)
-    if request.content_type and request.content_type.startswith('multipart/form-data'):
-        if 'file' not in request.files:
-            raise ApiError("Missing file upload")
-        file = request.files['file']
-        data = file.read()
     else:
-        data = request.data
-        if not data:
-            raise ApiError("Missing request body")
-    return validate(profile, data)
+        if request.content_type and request.content_type.startswith('multipart/form-data'):
+            if 'file' not in request.files:
+                raise ApiError("Missing file upload")
+            data = request.files['file'].stream
+        else:
+            data = request.data
+        return service.validate(profile, data=data)
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # pragma: no cover
     parser = argparse.ArgumentParser()
     parser.add_argument('-w', '--wsgi', action=argparse.BooleanOptionalAction, help="Use WSGI")
     parser.add_argument('-d', '--debug', action=argparse.BooleanOptionalAction)
@@ -101,11 +88,11 @@ if __name__ == '__main__':
 
     print(f"Loading configuration from {args.config}")
     config = json.load(Path(args.config).open())
-    # TODO: check: config must be object with profiles
 
     config['debug'] = args.debug
     port = config.get('port', 7007)
-    init(**config)
+    init(config)
+
     if args.wsgi:
         print(f"Starting WSGI server at http://localhost:{args.port}/")
         serve(app, host="0.0.0.0", port=port, threads=8)

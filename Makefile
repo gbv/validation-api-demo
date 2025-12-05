@@ -6,7 +6,8 @@ deps:
 .PHONY: test
 
 test:
-	@. .venv/bin/activate && coverage run -m pytest -v -s && coverage report -m
+	@. .venv/bin/activate && coverage run --branch -m pytest -v -s && coverage report -m
+	# TODO: generate coverage report in HTML for individual lines
 
 start:
 	@.venv/bin/python3 app.py

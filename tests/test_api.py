@@ -1,10 +1,8 @@
 import pytest
 import tempfile
-
+from pathlib import Path
+import io
 # from unittest.mock import patch
-# import os
-# from pathlib import Path
-
 from app import app, init
 
 
@@ -20,9 +18,7 @@ def expect_fail(client, method, path, error=None, code=400, **kwargs):
     res = client.open(path, method=method, **kwargs)
     assert res.status_code == code
     if error:
-        if type(error) is str:
-            error = {"message": error}
-        error["code"] = code
+        error = {"message": error, "code": code}
         res = res.get_json()
         # print(res)
         for key in error:
@@ -30,20 +26,22 @@ def expect_fail(client, method, path, error=None, code=400, **kwargs):
 
 
 @pytest.fixture
-def stage():
+def tmp_dir():
     with tempfile.TemporaryDirectory() as tempdir:
         yield tempdir
 
 
 @pytest.fixture
-def client(stage):
+def client(tmp_dir):
     app.testing = True
+
+    stage = Path(__file__).parent / 'files'
 
     profiles = [{
         "id": "json",
         "checks": ["json"]
     }]
-    init(title="Validation Service Test", stage=stage, profiles=profiles)
+    init(dict(title="Validation Service Test", stage=stage, downloads=tmp_dir, profiles=profiles))
 
     with app.test_client() as client:
         setattr(client, 'fail', lambda *args, **kw: expect_fail(client, *args, **kw))
@@ -64,26 +62,41 @@ def test_api(client):
         {"id": "json"}
     ])
 
-    client.fail('GET', '/validate/xxx?data=123', code=404,
+    client.fail('GET', '/xxx/validate?data=123', code=404,
                 error="Profile not found: xxx")
 
-    client.fail('GET', '/validate/json', code=400,
-                error="Expect exactely one query parameter: data, url, or file")
+    client.fail('GET', '/json/validate', code=400,
+                error="Expect exactely one query parameter: data, url, file")
 
-    client.fail('GET', '/validate/json?url=http://example.org/&data=123', code=400,
-                error="Expect exactely one query parameter: data, url, or file")
+    client.fail('GET', '/json/validate?url=http://example.org/&data=123', code=400,
+                error="Expect exactely one query parameter: data, url, file")
 
-    client.fine('GET', '/validate/json?data={}')
+    client.fine('GET', '/json/validate?data={}')
 
-    client.fine('GET', '/validate/json?data={', [{
+    client.fine('GET', '/json/validate?data={', [{
         'message': 'Expecting property name enclosed in double quotes',
         'position': {'line': '1', 'linecol': '1:2', 'offset': '1'}}
     ])
 
 
-# TODO: test file upload
-"""
-def test_post_validate_profile_upload(client):
-    data = {'file': (io.BytesIO(b"file content"), 'test.txt')}
-    response = client.post('/validate/profileA', content_type='multipart/form-data', data=data)
-"""
+def test_validate_file(client):
+
+    client.fail('GET', '/json/validate?file=?', code=400,
+                error="Filename must contain only characters [a-zA-Z0-9._-]")
+
+    client.fail('GET', '/json/validate?file=not.found', code=404,
+                error="File not found in local stage: not.found")
+
+    client.fine('GET', '/json/validate?file=valid.json')
+
+    client.fine('GET', '/json/validate?file=invalid.json', [{
+        'message': 'Expecting value',
+        'position': {'line': '1', 'linecol': '1:1', 'offset': '0'}}])
+
+
+def test_validate_upload(client):
+
+    data = {'file': (io.BytesIO(b"{}"), 'test.json')}
+
+    res = client.post('/json/validate', content_type='multipart/form-data', data=data)
+    assert res.status_code == 200

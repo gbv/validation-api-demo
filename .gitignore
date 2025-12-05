@@ -3,6 +3,7 @@ __pycache__
 .coverage
 reports/
 stage/
+downloads/
 config.json
 *.tmp
 tmp/

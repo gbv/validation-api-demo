@@ -1,5 +1,8 @@
 {
   "port": 7007,
+  "stage": false,
+  "reports": false,
+  "downloads": false,
   "profiles": [
     {
       "id": "json",
