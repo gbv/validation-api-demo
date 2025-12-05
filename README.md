@@ -130,4 +130,4 @@ See also <https://github.com/gbv/validation-server> for a previous implementatio
 
 MIT © 2025- Verbundzentrale des GBV (VZG)
 
-[Data Validation Error Format] :https://gbv.github.io/validation-error-format/
+[Data Validation Error Format]: https://gbv.github.io/validation-error-format/
