@@ -1,4 +1,5 @@
-from .validate import Validator, ValidationError, validateJSON, parseJSON
+from .validate import Validator, ValidationError, validateJSON, parseJSON, parseXML
 from .service import ValidationService
 
-__all__ = [ValidationService, Validator, ValidationError, validateJSON, parseJSON]
+__all__ = [ValidationService, Validator, ValidationError,
+           validateJSON, parseJSON, parseXML]

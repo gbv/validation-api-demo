@@ -16,10 +16,14 @@ def test_config():
         "id": "json",
         "checks": ["json"],
         "url": "https://json.org/"
+    }, {
+        "id": "xml",
+        "checks": ["xml"]
     }]
 
     service = ValidationService(profiles=profiles)
-    assert service.profiles() == [{"id": "json", "url": "https://json.org/"}]
+    assert service.profiles() == [
+        {"id": "json", "url": "https://json.org/"}, {"id": "xml"}]
 
     with pytest.raises(Exception, match=r"This service does not support passing data via URL"):
         service.validate('json', url="http://example.org/")

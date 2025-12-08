@@ -13,6 +13,8 @@ This web service implements a **[Data Validation API](#API)** being specified as
   - [From sources](#from-sources)
   - [With Docker](#with-docker)
 - [Configuration](#configuration)
+  - [Profiles](#profiles)
+  - [Checks](#checks)
 - [API](#api)
   - [GET /profiles](#get-profiles)
   - [GET /{profile}/validate](#get-profilevalidate)
@@ -64,6 +66,16 @@ The [default configuration](config.default.json) contains some base formats. To 
 ### Profiles
 
 Each application profile is configured with a JSON object having a unique `id`, a list of `checks`, and additional metadata. See [profiles configuration JSON Schema](lib/validate/profiles-schema.json) for details.
+
+### Checks
+
+Each check is either a string, referencing another profile or a base format, or a JSON object for a more complex check.
+
+### Base formats
+
+- `json`
+- `xml`
+- ...
 
 ## API
 

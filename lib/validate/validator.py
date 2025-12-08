@@ -2,6 +2,7 @@ import json
 from pathlib import Path
 from .json import parseJSON
 from .jsonschema import validateJSON
+from .xml import parseXML
 
 
 schema = json.load((Path(__file__).parent / 'profiles-schema.json').open())
@@ -35,3 +36,5 @@ class Validator(object):
         for check in checks:
             if check == "json":
                 parseJSON(data)
+            elif check == "xml":
+                parseXML(data)
