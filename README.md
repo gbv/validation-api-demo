@@ -84,11 +84,11 @@ The webservice provides one endpoint to [list application profiles](#get-profile
 
 Details of Data Validation API are still being specified, so details may change. The core response format is being specified as **[Data Validation Error Format]**.
 
-#### GET /profiles
+### GET /profiles
 
 Return a list of application profiles configured at this instance of the validation service. The information is a subset of [profiles configuration](#profiles) limited to the public fields `id` (required), `title`, `description`, and `url`. Internal information about checks is not included.
 
-#### GET /{profile}/validate
+### GET /{profile}/validate
 
 Validate data against an application profile and return a list of errors in [Data Validation Error Format]. Data must be passed via one of these query parameters:
 
@@ -115,9 +115,17 @@ curl http://localhost:7007/json/validate -d '[1,2'
 ]
 ~~~
 
-#### POST /{profile}/validate
+### POST /{profile}/validate
 
 The validation endpoint can also be queried via HTTP POST: data can be passed as request body or as file upload (content type `multipart/form-data`). Additional query parameters are not supported.
+
+### GET /reports/{id}
+
+Return a validation report. *This endpoint has not been specified nor implemented yet.*
+
+### DELETE /reports/{id}
+
+Delete a validation report. *This endpoint has not been specified nor implemented yet.*
 
 ## Maintainers
 
