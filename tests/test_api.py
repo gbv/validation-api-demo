@@ -2,7 +2,6 @@ import pytest
 import tempfile
 from pathlib import Path
 import io
-import json
 from app import app, init
 
 

@@ -1,4 +1,3 @@
-import sys
 from flask import Flask, jsonify, render_template, request
 from waitress import serve
 from lib import ValidationService
@@ -52,9 +51,7 @@ def get_profiles():
 
 @app.route('/<profile>/validate', methods=['GET', 'POST'])
 def validate(profile):
-    try:
-        service.profile(profile)
-    except Exception:
+    if not service.has(profile):
         raise NotFound(f"Profile not found: {profile}")
 
     if request.method == 'GET':

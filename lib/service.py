@@ -26,11 +26,11 @@ class ValidationService:
 
         self.validator = Validator(**config)
 
-    def profiles(self):
-        return self.validator.profiles_metadata()
+    def profiles(self) -> list:
+        return list(self.validator.profiles.values())
 
-    def profile(self, id):
-        return self.validator.profile(id)
+    def has(self, profile) -> bool:
+        return profile in self.validator.profiles
 
     def validate(self, profile, data=None, url=None, file=None):
 
