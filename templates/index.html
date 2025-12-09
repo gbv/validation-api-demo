@@ -9,15 +9,6 @@
       margin: 20px;
       font-family: sans-serif;
     }
-    ul {
-      list-style-type: none;
-      padding: 0 1em;
-    }
-    li {
-      text-indent: -2.5em;
-      padding-left: 2.5em;
-      margin-bottom: 0.2em;
-    }
     a {
       text-decoration: none;
       color: rgb(96, 143, 219);
@@ -25,7 +16,11 @@
     a:hover, a:active {
       text-decoration: underline;
     }
+    dt {
+      font-weight: bold;
+    }
     footer {
+      padding-top: 1em;
       color: #999;
     }
     </style>
@@ -39,11 +34,47 @@
     <dl>
       <dt><a href="profiles">GET profiles</a></dt>
       <dd>
+        Return a list of supported application profiles
           ⇒ <a href="https://github.com/gbv/validation-api-ws#get-profiles">help</a>
       </dd>
+      <dt>GET {profile}/validate</dt>
+      <dd>
+        Validate data against an application profile
+          ⇒ <a href="https://github.com/gbv/validation-api-ws#get-profilevalidate">help</a>
+      </dd>
+      <dt>POST {profile}/validate</dt>
+      <dd>
+        Validate data against an application profile
+          ⇒ <a href="https://github.com/gbv/validation-api-ws#post-profilevalidate">help</a>
+      </dd>
     </p>
+    <h2>Profiles</h2>
+    <ul id="profiles">
+    </ul>
     <footer>
       powered by <a href="https://github.com/gbv/validation-api-ws">validation-service</a>
     </footer>
   </body>
-</html> 
+</html>
+<script>
+fetch("profiles").then(res => res.json()).then(profiles => {
+  const ul = document.getElementById("profiles")
+  profiles.forEach(({ id, url, description }) => {
+    const li = document.createElement('li')
+    if (url) {
+      const a = document.createElement('a')
+      a.href = url
+      a.textContent = id
+      li.appendChild(a)
+    } else {
+      li.textContent = id
+    }
+    if (description) {
+      const span = document.createElement('span')
+      span.textContent = ": " + description
+      li.appendChild(span)
+    }
+    ul.appendChild(li)
+  })
+})
+</script>

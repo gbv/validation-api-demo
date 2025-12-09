@@ -13,11 +13,8 @@
         "type": "string"
       },
       "description": {
-        "description": "Short description(s) of the profile, indexed by language tag (e.g. 'en')",
-        "type": "object",
-        "propertyNames": {
-          "pattern": "^[a-z]{2,}$"
-        }
+        "description": "Short description of the profile",
+        "type": "string"
       },
       "url": {
         "description": "URL of a document about the profile",

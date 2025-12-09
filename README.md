@@ -13,6 +13,7 @@ This web service implements a **[Data Validation API](#API)** being specified as
   - [From sources](#from-sources)
   - [With Docker](#with-docker)
 - [Configuration](#configuration)
+  - [Service settings](#service-settings)
   - [Profiles](#profiles)
   - [Checks](#checks)
 - [API](#api)
@@ -33,7 +34,7 @@ Requires basic development toolchain (`sudo apt install build-essential`) and Py
 
 1. clone repository: `git clone https://github.com/gbv/validation-api-ws.git && cd validation-api-ws`
 2. run `make deps` to install dependencies
-3. optionally [Configure](#configuration] the instance with 
+3. optionally [Configure](#configuration) the instance
 3. `make start` 
 
 ### Via Docker
@@ -44,7 +45,7 @@ A Docker image is automatically build [and published](https://github.com/orgs/gb
 docker run --rm -p 7007:7007 ghcr.io/gbv/validation-api-ws:main
 ~~~
 
-A [configuration] directory or file must exist and be mounted:
+A [configuration](#configuration) directory or file must exist and be mounted:
 
 ~~~sh
 test -f data/config.json && docker run --rm -p 7007:7007 --volume config:/app/config ghcr.io/gbv/validation-api-ws:main
@@ -53,7 +54,7 @@ test -f config.json && docker run --rm -p 7007:7007 --volume ./config.json:/app/
 
 ## Configuration
 
-The [default configuration](config.default.json) contains some base formats. To defined the application profiles to be checked against, create a configuration file in JSON format at `config.json` in the current directory or in the local subdirectory `config`. It is also possible to pass the location of config file or directory with argument `--config` at startup. The configuration file must contain field `profiles` with a list of [profile objects](#profiles) and it can contain additional service settings.
+The [default configuration](config.default.json) contains some base formats. To defined application profiles to be checked against, create a configuration file in JSON format at `config.json` in the current directory or in the local subdirectory `config`. It is also possible to pass the location of config file or directory with argument `--config` at startup. The configuration file must contain field `profiles` with a list of [profile objects](#profiles) and it can contain additional service settings.
 
 ### Service settings
 
@@ -95,9 +96,11 @@ Validate data against an application profile and return a list of errors in [Dat
 - `url` to be downloaded from an URL (if the service is configured with `downloads` directory)
 - `file` to be read from a local file in the stage directory of the server (if the service is configured with `stage` directory)
 
-Status code is always 200 if validation could be executed, no matter whether errors have been found or not.
+Status code is always 200 if validation could be executed, no matter whether errors have been found or not. For example validating the string `[1,2` at default profile `json` results in the following validation response. The error position (after the fourth character on line 1) is referenced with multiple dimensions. Dimension values are always strings.
 
-For example validating the string `[1,2` at default profile `json` (`curl http://localhost:7007/json/validate -d '[1,2'`) results in the following validation response. The error position (after the fourth character on line 1) is referenced with multiple dimensions. Dimension values are always strings.
+~~~sh
+curl http://localhost:7007/json/validate -d '[1,2'
+~~~
 
 ~~~json
 [
@@ -138,10 +141,10 @@ test -f config.json && docker run --rm -p 7007:7007 --volume ./config.json:/app/
 
 See also <https://github.com/gbv/validation-server> for a previous implementation in NodeJS. Both implementations may converge
 
-This work is [funded by DFG (project "AQinDa")](https://gepris.dfg.de/gepris/projekt/521659096)
-
 ## License
 
 MIT © 2025- Verbundzentrale des GBV (VZG)
+
+This work has been [funded by DFG in project *AQinDa*](https://gepris.dfg.de/gepris/projekt/521659096)
 
 [Data Validation Error Format]: https://gbv.github.io/validation-error-format/

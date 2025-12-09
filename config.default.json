@@ -6,10 +6,13 @@
   "profiles": [
     {
       "id": "json",
+      "url": "https://json.org/",
+      "description": "Check data to be JSON",
       "checks": ["json"]
     },
     {
       "id": "xml",
+      "description": "Check data to be well-formed XML",
       "checks": ["xml"]
     }
   ]
