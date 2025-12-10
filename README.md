@@ -60,7 +60,7 @@ The [default configuration](config.default.json) contains some base formats. To 
 
 - `title` (title of the webservice) is set to "Validation Service" by default.
 - `port` (numeric port to run the webservice) is set to 7007 by default.
-- `stage` (stage directory for data files at the server) is set to `false` (disabled) by default.
+- `files` (stage directory for data files at the server) is set to `false` (disabled) by default.
 - `reports` (reports directory to store reports in) is set to `false` (disabled) by default.
 - `downloads` (cache directory for data retrieved via URL) is set to `false` (disabled) by default.
 
@@ -105,7 +105,7 @@ Validate data against an application profile and return a list of errors in [Dat
 
 - `data` as string
 - `url` to be downloaded from an URL (if the service is configured with `downloads` directory)
-- `file` to be read from a local file in the stage directory of the server (if the service is configured with `stage` directory)
+- `file` to be read from a local file in the stage directory of the server (if the service is configured with `files` directory)
 
 Status code is always 200 if validation could be executed, no matter whether errors have been found or not. For example validating the string `[1,2` at default profile `json` results in the following validation response. The error position (after the fourth character on line 1) is referenced with multiple dimensions. Dimension values are always strings.
 

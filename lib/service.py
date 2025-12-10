@@ -21,7 +21,7 @@ class ValidationService:
 
         self.root = config.get("root", None)
 
-        for name in ['stage', 'reports', 'downloads']:
+        for name in ['files', 'reports', 'downloads']:
             path = config.get(name, False)
             if path:
                 path = Path(path)
@@ -63,12 +63,12 @@ class ValidationService:
             else:
                 raise ValueError("This service does not support passing data via URL")
         else:
-            if self.stage:
+            if self.files:
                 if not re.match('^[a-zA-Z0-9_-][a-z0-9._-]*$', file):
                     raise ValueError("Filename must contain only characters [a-zA-Z0-9._-]")
-                file = Path(self.stage / file)
+                file = Path(self.files / file)
                 if not file.is_file():
-                    raise LookupError(f"File not found in local stage: {file.name}")
+                    raise LookupError(f"File not found in local files: {file.name}")
             else:
                 raise ValueError("This service does not support passing data at server")
 

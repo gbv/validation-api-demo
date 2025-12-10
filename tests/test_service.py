@@ -36,10 +36,10 @@ def test_config():
         service.validate('json', data=42)
 
     with TemporaryDirectory() as path:
-        service = ValidationService(stage=path, profiles=[])
+        service = ValidationService(files=path, profiles=[])
 
-        with pytest.raises(FileNotFoundError, match=r"Missing stage directory:"):
-            service = ValidationService(stage=f"{path}/XXX", profiles=[])
+        with pytest.raises(FileNotFoundError, match=r"Missing files directory:"):
+            service = ValidationService(files=f"{path}/XXX", profiles=[])
 
         service = ValidationService(profiles=profiles, downloads=path)
 

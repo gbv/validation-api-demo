@@ -12,7 +12,7 @@ all: # TODO: include integration test with backends such as QPM
 	@. .venv/bin/activate && coverage run --branch -m pytest -v -s && coverage report -m && coverage html
 
 start:
-	@test -d stage || mkdir stage
+	@test -d files || mkdir files
 	@.venv/bin/python3 app.py
 
 lint:

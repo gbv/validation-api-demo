@@ -34,18 +34,18 @@ def tmp_dir():
 def client(tmp_dir):
     app.testing = True
 
-    stage = Path(__file__).parent / 'files'
+    files = Path(__file__).parent / 'files'
 
     profiles = [{
         "id": "json",
         "checks": ["json"]
     }]
-    init(dict(title="Validation Service Test", stage=stage, downloads=tmp_dir, profiles=profiles))
+    init(dict(title="Validation Service Test", files=files, downloads=tmp_dir, profiles=profiles))
 
     with app.test_client() as client:
         setattr(client, 'fail', lambda *args, **kw: expect_fail(client, *args, **kw))
         setattr(client, 'fine', lambda *args, **kw: expect_fine(client, *args, **kw))
-        setattr(client, 'stage', stage)
+        setattr(client, 'files', files)
         yield client
 
 
@@ -84,7 +84,7 @@ def test_validate_file(client):
                 error="Filename must contain only characters [a-zA-Z0-9._-]")
 
     client.fail('GET', '/json/validate?file=not.found', code=404,
-                error="File not found in local stage: not.found")
+                error="File not found in local files: not.found")
 
     client.fine('GET', '/json/validate?file=valid.json')
 
