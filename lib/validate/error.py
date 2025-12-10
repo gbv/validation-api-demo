@@ -23,14 +23,17 @@ class ValidationError(Exception):
         }]
         return ValidationError(message, position)
 
-    def fromException(error):
-        msg = str(error)
-        pos = None
-        if type(error) is SyntaxError and error.lineno:
-            pos = {"line": error.lineno}
-            if error.offset:
-                pos["linecol"] = f"{error.lineno}:{error.offset}"
-            # remove location from message
-            msg = re.sub(f"^[^:]+line {error.lineno}[^:]*: ", "", msg)
-            msg = re.sub(f"\\s*\\([^)]*line {error.lineno}[^)]*\\)$", "", msg)
-        return ValidationError(msg, pos)
+#
+# TODO: used in RDF parser errors
+#
+#    def fromException(error):
+#        msg = str(error)
+#        pos = None
+#        if type(error) is SyntaxError and error.lineno:
+#            pos = {"line": error.lineno}
+#            if error.offset:
+#                pos["linecol"] = f"{error.lineno}:{error.offset}"
+#            # remove location from message
+#            msg = re.sub(f"^[^:]+line {error.lineno}[^:]*: ", "", msg)
+#            msg = re.sub(f"\\s*\\([^)]*line {error.lineno}[^)]*\\)$", "", msg)
+#        return ValidationError(msg, pos)

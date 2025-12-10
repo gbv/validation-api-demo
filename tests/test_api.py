@@ -72,6 +72,8 @@ def test_api(client):
 
     client.fine('GET', '/json/validate?data={}')
 
+    client.fail('GET', '/json', code=404)
+
     client.fine('GET', '/json/validate?data={', [{
         'message': 'Expecting property name enclosed in double quotes',
         'position': {'line': '1', 'linecol': '1:2', 'offset': '1'}}
