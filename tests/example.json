@@ -1,0 +1,14 @@
+{
+  "profiles": [{
+    "id": "json",
+    "checks": ["json"]
+  },{
+    "id": "ap",
+    "checks": [{
+      "schema": "../lib/validate/profiles-schema.json",
+      "language": "json-schema"
+    }]
+  }],
+  "downloads": "urlcache",
+  "stage": "./"
+}
