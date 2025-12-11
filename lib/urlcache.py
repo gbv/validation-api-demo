@@ -31,6 +31,7 @@ class URLCache(object):
         meta = dict(response.headers)
 
         meta['url'] = url
+        meta['hash'] = hash
         body_file.write_bytes(body)
         meta_file.write_text(json.dumps(meta, indent=2), encoding="utf-8")
 
