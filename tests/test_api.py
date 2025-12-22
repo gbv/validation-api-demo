@@ -54,6 +54,8 @@ def test_html(client):
     assert resp.status_code == 200
     assert b"Validation Service Test" in resp.data
 
+    client.fail('GET', '/?crash=1', code=500, error="boom!")
+
 
 def test_api(client):
 

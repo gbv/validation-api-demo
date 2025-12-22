@@ -5,7 +5,7 @@
 
 > Demo of a simple Web API to validate data against predefined criteria
 
-This web service implements a **[Data Validation API](#API)** being specified as part of project AQinDA. The API helps allows to check data against defined application profiles and to integrate such checks into data processing workflows. The API is not meant to define quality criteria of application profiles.
+This web service implements a **[Data Validation API](#API)** being specified as part of project AQinDA. The API helps allows to check data against application profiles and to integrate such checks into data processing workflows. The API is not meant to define quality criteria of application profiles but to execute defined criteria.
 
 ## Table of Contents
 
@@ -22,8 +22,8 @@ This web service implements a **[Data Validation API](#API)** being specified as
   - [GET /profiles](#get-profiles)
   - [GET /reports/{id}](#get-reportid)
   - [DELETE /reports/{id}](#delete-reportid)
-- [Maintainers](#maintainers)
 - [Contributing](#contributing)
+- [Maintainers](#maintainers)
 - [License](#license)
 
 ## Installation
@@ -140,13 +140,9 @@ Return a validation report. *This endpoint has not been specified nor implemente
 
 Delete a validation report. *This endpoint has not been specified nor implemented yet.*
 
-## Maintainers
-
-- [@nichtich](https://github.com/nichtich)
-
 ## Contributing
 
-- `make deps` installs Python dependencies in a virtual environment in directory `.venv`. You may want to call `. .venv/bin/activate` to active the environment.
+- `make deps` installs Python dependencies in a virtual environment in directory `.venv`. You may also want to call `. .venv/bin/activate` to active the environment.
 - `make test` runs unit tests
 - `make all` runs unit tests and integration test. Also puts coverage report into directory `htmlcov`
 - `make lint` checks coding style
@@ -161,6 +157,10 @@ test -f config.json && docker run --rm -p 7007:7007 --volume ./config.json:/app/
 ~~~
 
 See also <https://github.com/gbv/validation-server> for a previous implementation in NodeJS. Both implementations may converge
+
+## Maintainers
+
+- [@nichtich](https://github.com/nichtich)
 
 ## License
 

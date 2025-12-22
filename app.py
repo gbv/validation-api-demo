@@ -2,6 +2,7 @@ from flask import Flask, jsonify, render_template, request
 from waitress import serve
 from lib import ValidationService
 from pathlib import Path
+from werkzeug import exceptions
 import json
 import argparse
 
@@ -18,27 +19,21 @@ def init(config):
     return config.get('port', 7007)
 
 
-class ApiError(Exception):
-    code = 400
-
-
-class NotFound(ApiError):
-    code = 404
-
-
-@app.errorhandler(ApiError)
+@app.errorhandler(Exception)
 def handle_apierror(e):
-    body = {
-        "code": type(e).code,
-        "message": str(e)
-    }
-    return jsonify(body), body['code']
-
-# TODO: handle internal server errors
+    if type(e) is LookupError or type(e) is exceptions.NotFound:
+        code = 404
+    elif type(e) is ValueError:
+        code = 400
+    else:
+        code = 500
+    return jsonify({"code": code, "message": str(e)}), code
 
 
 @app.route('/')
 def get_index():
+    if (app.debug or app.testing) and request.args.get("crash"):
+        raise Exception("boom!")
     return render_template('index.html', **app.config)
 
 
@@ -50,7 +45,7 @@ def get_profiles():
 @app.route('/<profile>/validate', methods=['GET', 'POST'])
 def validate(profile):
     if not service.has(profile):
-        raise NotFound(f"Profile not found: {profile}")
+        raise LookupError(f"Profile not found: {profile}")
 
     if request.method == 'GET':
         params = ['data', 'url', 'file']
@@ -59,17 +54,12 @@ def validate(profile):
         mime = request.content_type or ''
         if mime.startswith('multipart/form-data'):
             if 'file' not in request.files:
-                raise ApiError("Missing file upload")
+                raise ValueError("Missing file upload")
             args = {"data": request.files['file'].stream}
         else:
             args = {"data": request.get_data()}
 
-    try:
-        return service.validate(profile, **args)
-    except ValueError as e:
-        raise ApiError(str(e))
-    except LookupError as e:
-        raise NotFound(str(e))
+    return service.validate(profile, **args)
 
 
 if __name__ == '__main__':  # pragma: no cover
