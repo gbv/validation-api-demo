@@ -89,7 +89,7 @@ Schema checks validates against a schema in some known schema language. The chec
 The following schema languages are supported:
 
 - `json-schema` - [JSON Schema](https://json-schema.org/)
-- `xsd` - XML Schema (*not implemented yet*)
+- `xsd` - [XML Schema](https://www.w3.org/TR/xmlschema-0/)
 
 ## API
 
