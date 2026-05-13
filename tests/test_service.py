@@ -23,6 +23,7 @@ def test_config():
     }]
 
     service = ValidationService(profiles=profiles)
+
     assert service.profiles() == [
         {"id": "json", "url": "https://json.org/"}, {"id": "xml"}]
 
@@ -34,6 +35,11 @@ def test_config():
 
     with pytest.raises(Exception, match=r"Data must be string, bytes or IOBase"):
         service.validate('json', data=42)
+
+    assert service.validate('xml', data="\n") == [
+        {'message': 'no element found', 'position': {'line': '2', 'linecol': '2:1'}}]
+
+    assert service.validate('xml', data="<root/>") == []
 
     with TemporaryDirectory() as path:
         service = ValidationService(files=path, profiles=[])
@@ -60,9 +66,24 @@ def test_schemas():
     path = Path(__file__).parent
     config = json.load((path / "example.json").open())
     service = ValidationService(config, root=path)
-    assert service.profiles() == [{"id": "json"}, {"id": "ap"}]
+    assert service.profiles() == [{"id": "json"}, {"id": "ap"}, {"id": "my-xml"}]
+
+    # validate JSON against a JSON Schema
 
     assert service.validate('ap', data=json.dumps(config["profiles"])) == []
 
     assert service.validate('ap', url="http://example.org/valid.json") == [
         {'message': "'id' is a required property", 'position': {'jsonpointer': '/0'}}]
+
+    # validate XML against an XML Schema
+
+    assert service.validate('my-xml', data='<a><b id="1"/><b id="2"/></a>') == []
+
+    assert service.validate('my-xml', data="<a/>") == [{
+        "message": "The content of element 'a' is not complete. Tag 'b' expected.",
+        'position': {'xpath': '/a'}
+    }]
+    assert service.validate('my-xml', data='<a><b id="x"/></a>') == [
+        {'message': "attribute id='x': invalid literal for int() with base 10: 'x'", 'position': {'xpath': '/a/b'}},
+        {'message': "The content of element 'a' is not complete. Tag 'b' expected.", 'position': {'xpath': '/a'}}
+    ]

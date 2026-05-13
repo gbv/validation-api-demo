@@ -74,7 +74,9 @@ class ValidationService:
 
         errors = []
         try:
-            self.validator.execute(profile, data, file)
+            found = self.validator.execute(profile, data, file)
+            if found:
+                errors.extend(found)
         except ValidationError as e:
-            errors.append(e.to_dict())
-        return errors
+            errors.append(e)
+        return [(e if isinstance(e,dict) else e.to_dict()) for e in errors]

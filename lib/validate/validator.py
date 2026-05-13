@@ -3,15 +3,18 @@ from pathlib import Path
 from .json import parseJSON
 from .jsonschema import validateJSON
 from .xml import parseXML
+from .xmlschema import validateXML
 
 
 schema = json.load((Path(__file__).parent / 'profiles-schema.json').open())
 
 
-builtin = {
-    "json": parseJSON,
-    "xml": parseXML
-}
+def parse(data, fmt):
+    if fmt == "json":
+        parseJSON(data)
+    if fmt == "xml":
+        parseXML(data)
+
 
 
 def resolve(path, root):
@@ -24,8 +27,8 @@ def resolve(path, root):
 
 def compile(check, root):
     if type(check) is str:
-        if check in builtin:
-            return builtin[check]
+        if check == "json" or check == "xml":
+            return lambda data: parse(data, check)
         else:
             # TODO: allow to reference another profile
             raise Exception(f"Unknown check: {check}")
@@ -35,11 +38,13 @@ def compile(check, root):
         schema = resolve(check["schema"], root)
 
         match check["language"]:
+            # TODO: parse and compile XML Schema instead of re-reading each time
             case "json-schema":
                 schema = json.load(schema.open())
                 return lambda data: validateJSON(parseJSON(data), schema)
-            # case "xsd":
-            #    pass  # TODO: load as local file or from URL with cache
+            case "xsd":
+                return lambda data: validateXML(parseXML(data), schema)
+
             case _:
                 raise Exception(f"Unsupported schema language: {check['language']}")
 
@@ -71,8 +76,11 @@ class Validator(object):
     def profile(self, id) -> dict:
         return self.profiles[id]
 
+    # may throw an error or return an array of errors
     def execute(self, profile, data=None, file=None):
         if file:
             data = Path(file).read_bytes()
         for check in self.checks[profile]:
-            check(data)
+            errors = check(data)
+            if errors is not None and len(errors):
+                return errors

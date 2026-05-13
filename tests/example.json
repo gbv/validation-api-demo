@@ -1,14 +1,30 @@
 {
-  "profiles": [{
-    "id": "json",
-    "checks": ["json"]
-  },{
-    "id": "ap",
-    "checks": [{
-      "schema": "../lib/validate/profiles-schema.json",
-      "language": "json-schema"
-    }]
-  }],
+  "profiles": [
+    {
+      "id": "json",
+      "checks": [
+        "json"
+      ]
+    },
+    {
+      "id": "ap",
+      "checks": [
+        {
+          "schema": "../lib/validate/profiles-schema.json",
+          "language": "json-schema"
+        }
+      ]
+    },
+    {
+      "id": "my-xml",
+      "checks": [
+        {
+          "schema": "../tests/schema.xsd",
+          "language": "xsd"
+        }
+      ]
+    }
+  ],
   "downloads": "urlcache",
   "stage": "./"
 }

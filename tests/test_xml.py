@@ -17,6 +17,7 @@ not_wellformed = [
 
 # TODO: check invalid DTD
 
+
 def test_wellformed():
     assert isinstance(parseXML("<x/>"), ET.Element)
 
