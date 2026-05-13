@@ -7,7 +7,7 @@
     {
       "id": "json",
       "url": "https://json.org/",
-      "description": "Check data to be JSON",
+      "description": "Check data to be parseable JSON",
       "checks": ["json"]
     },
     {

@@ -5,7 +5,9 @@
 
 > Demo of a simple Web API to validate data against predefined criteria
 
-This web service implements a **[Data Validation API](#API)** being specified as part of project AQinDA. The API helps allows to check data against application profiles and to integrate such checks into data processing workflows. The API is not meant to define quality criteria of application profiles but to execute defined criteria.
+This web service implements a **[Data Validation API](#API)** being specified as part of project AQinDA. The API helps allows to check data against application profiles and to integrate such checks into data processing workflows. The API is *not* meant to define quality criteria of application profiles but to execute defined qualitiy criteria in form of schema validation or other constraints.
+
+Dependending on [configuration](#configuration) data can be passed via HTTP GET and POST, via URL, or from local files at the server. The result of analysis is returned as list of errors in [Data Validation Error Format] or as detailled report in data quality report format (*not implemented yet*).
 
 ## Table of Contents
 
@@ -58,28 +60,52 @@ test -f config.json && docker run --rm -p 7007:7007 --volume ./config.json:/app/
 
 The [default configuration](config.default.json) contains some base formats. To defined application profiles to be checked against, create a configuration file in JSON format at `config.json` in the current directory or in the local subdirectory `config`. It is also possible to pass the location of config file or directory with argument `--config` at startup. The configuration file must contain field `profiles` with a list of [profile objects](#profiles) and it can contain additional service settings.
 
+The [default configuration](config.default.json) contains two profiles based on built-in checks whether the input data can be parsed as JSON or XML, respectively:
+
+~~~json
+{
+  "port": 7007,
+  "files": false,
+  "reports": false,
+  "downloads": false,
+  "profiles": [
+    {
+      "id": "json",
+      "url": "https://json.org/",
+      "description": "Check data to be parseable JSON",
+      "checks": ["json"]
+    },
+    {
+      "id": "xml",
+      "description": "Check data to be well-formed XML",
+      "checks": ["xml"]
+    }
+  ]
+}
+~~~
+
 ### Service settings
 
-- `title` (title of the webservice) is set to "Validation Service" by default.
-- `port` (numeric port to run the webservice) is set to 7007 by default.
+- `title` (title of the service) is set to "Validation Service" by default.
+- `port` (numeric port to run the service) is set to `7007` by default.
 - `files` (stage directory for data files at the server) is set to `false` (disabled) by default.
 - `reports` (reports directory to store reports in) is set to `false` (disabled) by default.
 - `downloads` (cache directory for data retrieved via URL) is set to `false` (disabled) by default.
 
 ### Profiles
 
-Each application profile is configured with a JSON object having a unique `id`, a list of `checks`, and additional metadata. See [profiles configuration JSON Schema](lib/validate/profiles-schema.json) for details.
+Each application profile is configured with a JSON object having a unique `id`, a list of `checks`, and additional metadata. See [profiles configuration JSON Schema](lib/validate/profiles-schema.json) for details of the configuration.
 
 ### Checks
 
-Each check is either a string, referencing another profile or a base format, or a JSON object for a more complex check.
+Each check is either a string, referencing a base format or another profile, or a JSON object for a more complex check. By now only  [schema checks](#schema-checks) (against JSON Schema or XML Schema) have been implemented. Additional types of checks are planned.
 
-### Base formats
+#### Base formats
 
 - `json` - validate JSON syntax
 - `xml` - validate XML syntax (document must be well-formed XML)
 
-### Schema checks
+#### Schema checks
 
 Schema checks validates against a schema in some known schema language. The check is configured with two fields:
 
@@ -90,6 +116,18 @@ The following schema languages are supported:
 
 - `json-schema` - [JSON Schema](https://json-schema.org/)
 - `xsd` - [XML Schema](https://www.w3.org/TR/xmlschema-0/)
+
+#### Script check
+
+Script checks execute a script on the server (*not implemented yet*).
+
+#### API call check
+
+Pass data to another web service to be checked (*not implemented yet*).
+
+#### Constraint check
+
+Check data against complex constraints specified in AQinDa Constraint Language (*yet to be defined*)
 
 ## API
 
