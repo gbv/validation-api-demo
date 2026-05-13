@@ -109,13 +109,18 @@ Each check is either a string, referencing a base format or another profile, or 
 
 Schema checks validates against a schema in some known schema language. The check is configured with two fields:
 
-- `language` - the schema language
-- `schema` - schema file or URL
+- `schema` - the schema language
+- `location` - schema file or URL
 
 The following schema languages are supported:
 
 - `json-schema` - [JSON Schema](https://json-schema.org/)
 - `xsd` - [XML Schema](https://www.w3.org/TR/xmlschema-0/)
+- `schematron` *not implemented yet*
+- `avram` [Avram Schema](https://format.gbv.de/schema/avram/specification) *not implemented yet*
+- `pcre` Regular Expression *not implemented yet*
+- `shacl` [SHACL Shapes](https://www.w3.org/TR/shacl/) *not implemented yet*
+- `antlr` [ANTLR](https://www.antlr.org/) Grammar *not implemented yet*
 
 #### Script check
 

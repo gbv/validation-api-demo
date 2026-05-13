@@ -10,8 +10,8 @@
       "id": "ap",
       "checks": [
         {
-          "schema": "../lib/validate/profiles-schema.json",
-          "language": "json-schema"
+          "location": "../lib/validate/profiles-schema.json",
+          "schema": "json-schema"
         }
       ]
     },
@@ -19,8 +19,8 @@
       "id": "my-xml",
       "checks": [
         {
-          "schema": "../tests/schema.xsd",
-          "language": "xsd"
+          "location": "../tests/schema.xsd",
+          "schema": "xsd"
         }
       ]
     }

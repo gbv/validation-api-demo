@@ -27,13 +27,13 @@
           "type": "object",
           "description": "Check against a schema",
           "properties": {
-            "schema": {
+            "location": {
               "description": "Schema file or URL",
               "type": "string"
             },
-            "language": {
+            "schema": {
               "description": "Schema language",
-              "enum": [ "json-schema", "xsd", "schematron", "avram", "pcre" ]
+              "enum": [ "json-schema", "xsd", "schematron", "avram", "pcre", "shacl", "antlr" ]
             }
           }
         }

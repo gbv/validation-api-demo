@@ -33,11 +33,11 @@ def compile(check, root):
             # TODO: allow to reference another profile
             raise Exception(f"Unknown check: {check}")
 
-    if "schema" in check and "language" in check:
+    if "schema" in check and "location" in check:
         # TODO: support URL in additio to local file
-        schema = resolve(check["schema"], root)
+        schema = resolve(check["location"], root)
 
-        match check["language"]:
+        match check["schema"]:
             # TODO: parse and compile XML Schema instead of re-reading each time
             case "json-schema":
                 schema = json.load(schema.open())
@@ -46,7 +46,7 @@ def compile(check, root):
                 return lambda data: validateXML(parseXML(data), schema)
 
             case _:
-                raise Exception(f"Unsupported schema language: {check['language']}")
+                raise Exception(f"Unsupported schema language: {check['schema']}")
 
     raise Exception(f"Unkown check: {json.dumps(check)}")
 
