@@ -142,7 +142,7 @@ In addition there are optional endpoints [to look up](#get-reportsid) and [to re
 
 ### GET /{profile}/validate
 
-Validate data against an application profile and return a list of errors in [Data Validation Report Format]. Data must be passed via one of these query parameters:
+Validate data against an application profile and return an error report in [Data Validation Report Format]. Data must be passed via one of these query parameters:
 
 - `data` as string
 - `url` to be downloaded from an URL (if the service is configured with `downloads` directory)
@@ -155,16 +155,18 @@ curl http://localhost:7007/json/validate -d '[1,2'
 ~~~
 
 ~~~json
-[
-  {
-    "message": "Expecting ',' delimiter",
-    "position": {
-      "line": "1",
-      "linecol": "1:5",
-      "offset": "4"
+{
+  "errors": [
+    {
+      "message": "Expecting ',' delimiter",
+      "position": {
+        "line": "1",
+        "linecol": "1:5",
+        "offset": "4"
+      }
     }
-  }
-]
+  ]
+}
 ~~~
 
 ### POST /{profile}/validate

@@ -59,7 +59,8 @@ def validate(profile):
         else:
             args = {"data": request.get_data()}
 
-    return service.validate(profile, **args)
+    errors = service.validate(profile, **args)
+    return {"errors": errors}
 
 
 if __name__ == '__main__':  # pragma: no cover

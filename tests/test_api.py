@@ -5,11 +5,11 @@ import io
 from app import app, init
 
 
-def expect_fine(client, method, path, result=None, code=200, **kwargs):
+def expect_fine(client, method, path, result=None, code=200, transform=lambda x:x, **kwargs):
     res = client.open(path, method=method, **kwargs)
     assert res.status_code == code
     if result:
-        assert res.get_json() == result
+        assert transform(res.get_json()) == result
     return res.get_json()
 
 
@@ -76,10 +76,10 @@ def test_api(client):
 
     client.fail('GET', '/json', code=404)
 
-    client.fine('GET', '/json/validate?data={', [{
+    client.fine('GET', '/json/validate?data={', {"errors":[{
         'message': 'Expecting property name enclosed in double quotes',
         'position': {'line': '1', 'linecol': '1:2', 'offset': '1'}}
-    ])
+    ]})
 
 
 def test_validate_file(client):
@@ -92,9 +92,11 @@ def test_validate_file(client):
 
     client.fine('GET', '/json/validate?file=valid.json')
 
-    client.fine('GET', '/json/validate?file=invalid.json', [{
-        'message': 'Expecting value',
-        'position': {'line': '1', 'linecol': '1:1', 'offset': '0'}}])
+    client.fine('GET', '/json/validate?file=invalid.json', {
+        'errors': [{
+            'message': 'Expecting value',
+            'position': {'line': '1', 'linecol': '1:1', 'offset': '0'}}
+        ]})
 
 
 def test_validate_upload(client):
@@ -107,11 +109,12 @@ def test_validate_upload(client):
 
     client.fine('POST', '/json/validate', data=b"{}")
 
-    client.fine('POST', '/json/validate', data=b"[1,2", result=[{
-        "message": "Expecting ',' delimiter",
-        "position": {
-            "line": "1",
-            "linecol": "1:5",
-            "offset": "4"
-        }
-    }])
+    client.fine('POST', '/json/validate', data=b"[1,2", result={
+        "errors": [{
+            "message": "Expecting ',' delimiter",
+            "position": {
+                "line": "1",
+                "linecol": "1:5",
+                "offset": "4"
+            }
+        }]})
