@@ -84,6 +84,7 @@ def test_schemas():
         'position': {'xpath': '/a'}
     }]
     assert service.validate('my-xml', data='<a><b id="x"/></a>') == [
-        {'message': "attribute id='x': invalid literal for int() with base 10: 'x'", 'position': {'xpath': '/a/b'}},
+        {'message': "attribute id='x': invalid literal for int() with base 10: 'x'",
+         'position': {'xpath': '/a/b'}},
         {'message': "The content of element 'a' is not complete. Tag 'b' expected.", 'position': {'xpath': '/a'}}
     ]

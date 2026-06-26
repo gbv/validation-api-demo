@@ -79,4 +79,4 @@ class ValidationService:
                 errors.extend(found)
         except ValidationError as e:
             errors.append(e)
-        return [(e if isinstance(e,dict) else e.to_dict()) for e in errors]
+        return [(e if isinstance(e, dict) else e.to_dict()) for e in errors]

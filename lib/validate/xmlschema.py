@@ -2,13 +2,12 @@ from .error import ValidationError
 import xmlschema
 
 
-def validateXML(tree, schema):
-    schema = xmlschema.XMLSchema(schema)
+class XSDValidator:
+    def __init__(self, schema):
+        self.schema = xmlschema.XMLSchema(schema)
 
-    # TODO: DTD validation with embedded DTD (with lxml)
-    # TODO: Schematron validation with pyschematron
-
-    return [
-        ValidationError(e.reason, position={"xpath": e.path} if e.path else None)
-        for e in schema.iter_errors(tree)
-    ]
+    def validateXML(self, tree):
+        return [
+            ValidationError(e.reason, position={"xpath": e.path} if e.path else None)
+            for e in self.schema.iter_errors(tree)
+        ]

@@ -1,6 +1,9 @@
 <?xml version="1.0"?>
 <!DOCTYPE a [
-  <!ELEMENT a (b)>
-  <!ELEMENT b (#PCDATA)>
+  <!ELEMENT a (c)>
+  <!ELEMENT c (#PCDATA)>
 ]>
-<a></a>
+<a>
+  <b/>
+  <b/>
+</a>

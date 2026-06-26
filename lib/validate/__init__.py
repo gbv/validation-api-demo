@@ -1,8 +1,8 @@
 from .validator import Validator
 from .error import ValidationError
-from .jsonschema import validateJSON
 from .json import parseJSON
+from .jsonschema import JSONSchemaValidator
 from .xml import parseXML
-from .xmlschema import validateXML
+from .xmlschema import XSDValidator
 
-__all__ = [Validator, ValidationError, validateJSON, parseJSON, parseXML, validateXML]
+__all__ = [Validator, ValidationError, parseJSON, JSONSchemaValidator, parseXML, XSDValidator]

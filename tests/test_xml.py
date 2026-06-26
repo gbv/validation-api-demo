@@ -1,4 +1,4 @@
-from lib import ValidationError, parseXML, validateXML
+from lib import ValidationError, parseXML, XSDValidator
 import xml.etree.ElementTree as ET
 from pathlib import Path
 import json
@@ -37,9 +37,10 @@ with (dir / "xml-cases.json").open() as f:
     cases = json.load(f)
 
 
-def test_invalid():
+def test_cases():
+    validator = XSDValidator(dir / "schema.xsd")
     for test in cases:
         file = dir / test["file"]
         xml = parseXML(file.read_text())
-        errors = validateXML(xml, (dir / "schema.xsd"))
+        errors = validator.validateXML(xml)
         assert [e.to_dict() for e in errors] == test["errors"]

@@ -1,10 +1,9 @@
 import json
 from pathlib import Path
 from .json import parseJSON
-from .jsonschema import validateJSON
 from .xml import parseXML
-from .xmlschema import validateXML
-
+from .jsonschema import JSONSchemaValidator
+from .xmlschema import XSDValidator
 
 schema = json.load((Path(__file__).parent / 'profiles-schema.json').open())
 
@@ -14,7 +13,6 @@ def parse(data, fmt):
         parseJSON(data)
     if fmt == "xml":
         parseXML(data)
-
 
 
 def resolve(path, root):
@@ -34,17 +32,18 @@ def compile(check, root):
             raise Exception(f"Unknown check: {check}")
 
     if "schema" in check and "location" in check:
-        # TODO: support URL in additio to local file
+        # TODO: support URL in addition to local file
         schema = resolve(check["location"], root)
 
         match check["schema"]:
-            # TODO: parse and compile XML Schema instead of re-reading each time
             case "json-schema":
-                schema = json.load(schema.open())
-                return lambda data: validateJSON(parseJSON(data), schema)
+                validator = JSONSchemaValidator(file=schema)
+                return lambda data: validator.validateJSON(parseJSON(data))
             case "xsd":
-                return lambda data: validateXML(parseXML(data), schema)
-
+                validator = XSDValidator(schema)
+                return lambda data: validator.validateXML(parseXML(data))
+            # TODO: DTD validation with embedded DTD (with lxml)
+            # TODO: Schematron validation with pyschematron
             case _:
                 raise Exception(f"Unsupported schema language: {check['schema']}")
 
@@ -53,7 +52,7 @@ def compile(check, root):
 
 class Validator(object):
     def __init__(self, profiles, **config):
-        validateJSON(profiles, schema)
+        # TODO: validate profiles against profiles schema
 
         root = config.get("root")
 

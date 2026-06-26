@@ -1,4 +1,4 @@
-from lib import ValidationError, validateJSON
+from lib import ValidationError, JSONSchemaValidator
 
 
 def test_jsonschema():
@@ -13,10 +13,11 @@ def test_jsonschema():
     }
 
     def fail(prop, pos, check={"type": "string"}):
+        schema = {"type": "object", "properties": {}}
+        schema["properties"][prop] = check
+        validator = JSONSchemaValidator(schema)
         try:
-            schema = {"type": "object", "properties": {}}
-            schema["properties"][prop] = check
-            validateJSON(data, schema)
+            validator.validateJSON(data)
             assert prop == "ValidationError should have been thrown!"  # pragma: no cover
 
         except ValidationError as e:
