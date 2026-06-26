@@ -61,6 +61,30 @@ def test_config():
 
     assert service.validate('json', url="http://example.org/valid.json") == []
 
+    # malformed configuration
+
+    with pytest.raises(Exception, match="Unknown check: y"):
+        ValidationService(profiles=[{"id": "x", "checks": ["y"]}])
+
+    with pytest.raises(Exception, match='Unkown check: {"foo": 3}'):
+        ValidationService(profiles=[{"id": "x", "checks": [{"foo": 3}]}])
+
+    with pytest.raises(Exception, match='Profiles must have unique ids'):
+        ValidationService(profiles=[{"id": "x"}, {"id": "x"}])
+
+    with pytest.raises(Exception, match="Unsupported schema language: 42"):
+        ValidationService(profiles=[{"id": "x", "checks": [{"schema": "42", "location": "."}]}])
+
+
+def test_files():
+    files = Path(__file__).parent / "files"
+    service = ValidationService(profiles=[{"id": "xml", "checks": ["xml"]}], files=files)
+
+    assert service.validate('xml', file="valid.xml") == []
+    assert service.validate('xml', data=open(files / "valid.xml")) == []
+    assert service.validate('xml', data=open(files / "broken.xml")) == [
+        {'message': 'not well-formed (invalid token)', 'position': {'line': '1', 'linecol': '1:2'}}]
+
 
 def test_schemas():
     path = Path(__file__).parent

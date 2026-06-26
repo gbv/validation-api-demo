@@ -3,6 +3,7 @@ __pycache__
 .coverage
 reports/
 files/
+!tests/files/
 downloads/
 config/
 config.json

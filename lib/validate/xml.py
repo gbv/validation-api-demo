@@ -6,10 +6,7 @@ from xml.parsers.expat import ErrorString
 
 def parseXML(data) -> ET.Element:
     try:
-        if isinstance(data, IOBase):
-            return ET.parse(data)
-        else:
-            return ET.fromstring(data)
+        return ET.fromstring(data)
     except ET.ParseError as e:
         line, col = e.position
         pos = {"line": f"{line}"}

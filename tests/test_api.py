@@ -5,7 +5,7 @@ import io
 from app import app, init
 
 
-def expect_fine(client, method, path, result=None, code=200, transform=lambda x:x, **kwargs):
+def expect_fine(client, method, path, result=None, code=200, transform=lambda x: x, **kwargs):
     res = client.open(path, method=method, **kwargs)
     assert res.status_code == code
     if result:
@@ -36,10 +36,10 @@ def client(tmp_dir):
 
     files = Path(__file__).parent / 'server'
 
-    profiles = [{
-        "id": "json",
-        "checks": ["json"]
-    }]
+    profiles = [
+        {"id": "json", "checks": ["json"]},
+        {"id": "xml", "checks": ["xml"]}
+    ]
     init(dict(title="Validation Service Test", files=files, downloads=tmp_dir, profiles=profiles))
 
     with app.test_client() as client:
@@ -59,9 +59,7 @@ def test_html(client):
 
 def test_api(client):
 
-    client.fine('GET', '/profiles', [
-        {"id": "json"}
-    ])
+    client.fine('GET', '/profiles', [{"id": "json"}, {"id": "xml"}])
 
     client.fail('GET', '/xxx/validate?data=123', code=404,
                 error="Profile not found: xxx")
@@ -76,10 +74,20 @@ def test_api(client):
 
     client.fail('GET', '/json', code=404)
 
-    client.fine('GET', '/json/validate?data={', {"errors":[{
+    client.fine('GET', '/json/validate?data={', {"errors": [{
         'message': 'Expecting property name enclosed in double quotes',
         'position': {'line': '1', 'linecol': '1:2', 'offset': '1'}}
     ]})
+
+    client.fine('GET', '/json/validate?data=', {"errors": [{
+        'message': 'Expecting value', 'position': {'line': '1', 'linecol': '1:1', 'offset': '0'}
+    }]})
+
+    # XML data
+
+    client.fine('GET', '/xml/validate?data=<a/>')
+    client.fine('GET', '/xml/validate?data=a', {'errors': [{
+        'message': 'syntax error', 'position': {'line': '1', 'linecol': '1:1'}}]})
 
 
 def test_validate_file(client):

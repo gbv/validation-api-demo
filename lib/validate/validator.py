@@ -75,9 +75,6 @@ class Validator(object):
 
         self.checks = checks
 
-    def profile(self, id) -> dict:
-        return self.profiles[id]
-
     # may throw an error or return an array of errors
     def execute(self, profile, data=None, file=None):
         if file:

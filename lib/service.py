@@ -47,15 +47,15 @@ class ValidationService:
 
     def validate(self, profile, data=None, url=None, file=None):
 
-        if sum(1 for p in [data, file, url] if p or p == "") != 1:
+        if sum(1 for p in [data, file, url] if p is not None) != 1:
             raise ValueError("Expect exactely one query parameter: data, url, file")
 
-        if data:
+        if data is not None:
             if isinstance(data, io.IOBase):
-                data = data.read()
+                data = data.read()  # TODO: support streams
             if not (type(data) is str or type(data) is bytes):
                 raise ValueError("Data must be string, bytes or IOBase")
-        elif url:
+        elif url is not None:
             if self.urlcache:
                 if not (validators.url(url) and re.match('^https?://', url) and len(url) <= 4096):
                     raise ValueError("URL invalid or too long")
