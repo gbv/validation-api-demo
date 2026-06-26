@@ -24,3 +24,8 @@ lint:
 
 fix:
 	@.venv/bin/autopep8 --in-place --max-line-length=100 *.py lib/*.py lib/*/*.py tests/*.py
+
+loc:
+	cloc $$(git ls-files)
+
+

@@ -192,6 +192,7 @@ Delete a validation report. *This endpoint has not been specified nor implemente
 - `make all` runs unit tests and integration test. Also puts coverage report into directory `htmlcov`
 - `make lint` checks coding style
 - `make fix` cleans up some coding style violations
+- `make loc` shows lines of code (requires `cloc` to be installed)
 
 To locally build and run the image Docker for testing:
 
