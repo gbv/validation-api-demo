@@ -23,6 +23,15 @@
           "schema": "xsd"
         }
       ]
+    },
+    {
+      "id": "sch",
+      "checks": [
+        {
+          "location": "../tests/schema.sch",
+          "schema": "schematron"
+        }
+      ]
     }
   ],
   "downloads": "urlcache",

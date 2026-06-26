@@ -66,7 +66,7 @@ def test_schemas():
     path = Path(__file__).parent
     config = json.load((path / "example.json").open())
     service = ValidationService(config, root=path)
-    assert service.profiles() == [{"id": "json"}, {"id": "ap"}, {"id": "my-xml"}]
+    assert service.profiles() == [{"id": "json"}, {"id": "ap"}, {"id": "my-xml"}, {"id": "sch"}]
 
     # validate JSON against a JSON Schema
 
@@ -87,4 +87,11 @@ def test_schemas():
         {'message': "attribute id='x': invalid literal for int() with base 10: 'x'",
          'position': {'xpath': '/a/b'}},
         {'message': "The content of element 'a' is not complete. Tag 'b' expected.", 'position': {'xpath': '/a'}}
+    ]
+
+    # validate XML against an Schematron Schema
+
+    assert service.validate('sch', data='<a id="1"></a>') == []
+    assert service.validate('sch', data='<a><b/></a>') == [
+        {'message': "There must be an id", 'position': {'xpath': '/a[1]/b[1]'}}
     ]

@@ -1,5 +1,5 @@
 class ValidationError(Exception):
-    "Data Validation Error Format <https://gbv.github.io/validation-error-format/>"
+    "Data Validation Report Format <https://gbv.github.io/data-validation-report-format/>"
 
     def __init__(self, message, position=None):
         super().__init__(message)

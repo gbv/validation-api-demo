@@ -116,7 +116,7 @@ The following schema languages are supported:
 
 - `json-schema` - [JSON Schema](https://json-schema.org/)
 - `xsd` - [XML Schema](https://www.w3.org/TR/xmlschema-0/)
-- `schematron` *not implemented yet*
+- `schematron` [Schematron](https://en.wikipedia.org/wiki/Schematron)
 - `avram` [Avram Schema](https://format.gbv.de/schema/avram/specification) *not implemented yet*
 - `pcre` Regular Expression *not implemented yet*
 - `shacl` [SHACL Shapes](https://www.w3.org/TR/shacl/) *not implemented yet*

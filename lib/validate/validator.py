@@ -4,6 +4,7 @@ from .json import parseJSON
 from .xml import parseXML
 from .jsonschema import JSONSchemaValidator
 from .xmlschema import XSDValidator
+from .schematron import SchematronValidator
 
 schema = json.load((Path(__file__).parent / 'profiles-schema.json').open())
 
@@ -42,8 +43,10 @@ def compile(check, root):
             case "xsd":
                 validator = XSDValidator(schema)
                 return lambda data: validator.validateXML(parseXML(data))
+            case "schematron":
+                validator = SchematronValidator(schema)
+                return lambda data: validator.validateXML(data)
             # TODO: DTD validation with embedded DTD (with lxml)
-            # TODO: Schematron validation with pyschematron
             case _:
                 raise Exception(f"Unsupported schema language: {check['schema']}")
 
