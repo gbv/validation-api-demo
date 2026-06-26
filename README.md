@@ -7,7 +7,7 @@
 
 This web service implements a **[Data Validation API](#API)** being specified as part of project AQinDA. The API helps allows to check data against application profiles and to integrate such checks into data processing workflows. The API is *not* meant to define quality criteria of application profiles but to execute defined qualitiy criteria in form of schema validation or other constraints.
 
-Dependending on [configuration](#configuration) data can be passed via HTTP GET and POST, via URL, or from local files at the server. The result of analysis is returned as list of errors in [Data Validation Error Format] or as detailled report in data quality report format (*not implemented yet*).
+Dependending on [configuration](#configuration) data can be passed via HTTP GET and POST, via URL, or from local files at the server. The result of analysis is returned as list of errors in [Data Validation Report Format] or as detailled report in data quality report format (*not implemented yet*).
 
 ## Table of Contents
 
@@ -136,13 +136,13 @@ Check data against complex constraints specified in AQinDa Constraint Language (
 
 ## API
 
-Details of **Data Validation API** are still being specified, so details may change. The core response format is being specified as **[Data Validation Error Format]**. This implementation provides one endpoint for each profile, accesible via both [GET](#get-profilevalidate) and [POST](#get-profilevalidate) requests. The additional endpoint to [list application profiles](#get-profiles) is not part of the core Data Validation API: other implementation might provide only one endpoint to validate againsta single application profile.
+Details of **Data Validation API** are still being specified, so details may change. The core response format is being specified as **[Data Validation Report Format]**. This implementation provides one endpoint for each profile, accesible via both [GET](#get-profilevalidate) and [POST](#get-profilevalidate) requests. The additional endpoint to [list application profiles](#get-profiles) is not part of the core Data Validation API: other implementation might provide only one endpoint to validate againsta single application profile.
 
 In addition there are optional endpoints [to look up](#get-reportsid) and [to remove](#delete-reportsid) validation reports.
 
 ### GET /{profile}/validate
 
-Validate data against an application profile and return a list of errors in [Data Validation Error Format]. Data must be passed via one of these query parameters:
+Validate data against an application profile and return a list of errors in [Data Validation Report Format]. Data must be passed via one of these query parameters:
 
 - `data` as string
 - `url` to be downloaded from an URL (if the service is configured with `downloads` directory)
@@ -199,7 +199,7 @@ docker run --rm -p 7007:7007 validator  # default config, or:
 test -f config.json && docker run --rm -p 7007:7007 --volume ./config.json:/app/config.json validator
 ~~~
 
-See also <https://github.com/gbv/validation-server> for a previous implementation in NodeJS. Both implementations may converge
+See also <https://github.com/gbv/validation-server> for a previous implementation in NodeJS. Both implementations may converge.
 
 ## Maintainers
 
@@ -211,4 +211,4 @@ MIT © 2025- Verbundzentrale des GBV (VZG)
 
 This work has been funded [by DFG in project *AQinDa*](https://gepris.dfg.de/gepris/projekt/521659096)
 
-[Data Validation Error Format]: https://gbv.github.io/validation-error-format/
+[Data Validation Report Format]: https://gbv.github.io/data-validation-report-format/
