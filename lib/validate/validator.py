@@ -5,6 +5,7 @@ from .xml import parseXML
 from .jsonschema import JSONSchemaValidator
 from .xmlschema import XSDValidator
 from .schematron import SchematronValidator
+from .error import ValidationError
 
 schema = json.load((Path(__file__).parent / 'profiles-schema.json').open())
 
@@ -24,62 +25,80 @@ def resolve(path, root):
         return root / path
 
 
-def compile(check, root):
-    if type(check) is str:
-        if check == "json" or check == "xml":
-            return lambda data: parse(data, check)
-        else:
-            # TODO: allow to reference another profile
-            raise Exception(f"Unknown check: {check}")
-
-    if "schema" in check and "location" in check:
-        # TODO: support URL in addition to local file
-        schema = resolve(check["location"], root)
-
-        match check["schema"]:
-            case "json-schema":
-                validator = JSONSchemaValidator(file=schema)
-                return lambda data: validator.validateJSON(parseJSON(data))
-            case "xsd":
-                validator = XSDValidator(schema)
-                return lambda data: validator.validateXML(parseXML(data))
-            case "schematron":
-                validator = SchematronValidator(schema)
-                return lambda data: validator.validateXML(data)
-            # TODO: DTD validation with embedded DTD (with lxml)
-            case _:
-                raise Exception(f"Unsupported schema language: {check['schema']}")
-
-    raise Exception(f"Unkown check: {json.dumps(check)}")
-
-
 class Validator(object):
+    """Combines a set of application profiles to validate data against."""
+
     def __init__(self, profiles, **config):
+        self.root = config.get("root")
+        self.profiles = {}
+        self.checks = {}
+
         # TODO: validate profiles against profiles schema
 
-        root = config.get("root")
-
-        checks = {p["id"]: p.get("checks", []) for p in profiles}
-        if len(checks) != len(profiles):
-            raise ValueError("Profiles must have unique ids")
-
-        self.profiles = {}
         for p in profiles:
-            id = p["id"]
+            self.add(p)
 
-            # TODO: support reference to profile as check
-            checks[id] = [compile(c, root) for c in checks[id]]
+    def add(self, profile):
+        """Add a profile to the validator."""
 
-            about = ['id', 'title', 'description', 'url', 'report']
-            self.profiles[id] = {key: p[key] for key in about if p.get(key, False)}
+        id = profile["id"]
+        if id in self.profiles:
+            raise ValueError(f"Profile already defined: {id}")
 
-        self.checks = checks
+        checks = profile.get("checks", [])
 
-    # may throw an error or return an array of errors
-    def execute(self, profile, data=None, file=None):
+        # TODO: support reference to profile as check
+        self.checks[id] = [self.compile(c) for c in checks]
+
+        about = ['id', 'title', 'description', 'url', 'report']
+        self.profiles[id] = {key: profile[key] for key in about if profile.get(key, False)}
+
+    def execute(self, profile, data=None, file=None) -> list[ValidationError]:
+        """
+        Validate data, given directly or as file reference, against a profile.
+
+        Validation is performed sequentially against all checks of the profile.
+        If any check fails, the validation stops and the errors are returned.
+
+        Returns:
+            list[ValidationError]: list of errors (empty list if no errors found)
+
+        Raises:
+            BaseException: if profile not found or validation process failed
+        """
+
         if file:
             data = Path(file).read_bytes()
         for check in self.checks[profile]:
             errors = check(data)
             if errors is not None and len(errors):
                 return errors
+
+    def compile(self, check):
+        if type(check) is str:
+            if check == "json" or check == "xml":
+                # FIXME: this should not throw on syntax errors!
+                return lambda data: parse(data, check)
+            else:
+                # TODO: allow to reference another profile
+                raise Exception(f"Unknown check: {check}")
+
+        if "schema" in check and "location" in check:
+            # TODO: support URL in addition to local file
+            schema = resolve(check["location"], self.root)
+
+            match check["schema"]:
+                case "json-schema":
+                    validator = JSONSchemaValidator(file=schema)
+                    return lambda data: validator.validateJSON(parseJSON(data))
+                case "xsd":
+                    validator = XSDValidator(schema)
+                    return lambda data: validator.validateXML(parseXML(data))
+                case "schematron":
+                    validator = SchematronValidator(schema)
+                    return lambda data: validator.validateXML(data)
+                # TODO: DTD validation with embedded DTD (with lxml)
+                case _:
+                    raise Exception(f"Unsupported schema language: {check['schema']}")
+
+        raise Exception(f"Unkown check: {json.dumps(check)}")

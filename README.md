@@ -24,6 +24,7 @@ Dependending on [configuration](#configuration) data can be passed via HTTP GET 
   - [GET /profiles](#get-profiles)
   - [GET /reports/{id}](#get-reportid)
   - [DELETE /reports/{id}](#delete-reportid)
+- [Library](#library)
 - [Contributing](#contributing)
 - [Maintainers](#maintainers)
 - [License](#license)
@@ -58,9 +59,7 @@ test -f config.json && docker run --rm -p 7007:7007 --volume ./config.json:/app/
 
 ## Configuration
 
-The [default configuration](config.default.json) contains some base formats. To defined application profiles to be checked against, create a configuration file in JSON format at `config.json` in the current directory or in the local subdirectory `config`. It is also possible to pass the location of config file or directory with argument `--config` at startup. The configuration file must contain field `profiles` with a list of [profile objects](#profiles) and it can contain additional service settings.
-
-The [default configuration](config.default.json) contains two profiles based on built-in checks whether the input data can be parsed as JSON or XML, respectively:
+Create a configuration file `config.json` in the current directory or in the local subdirectory `config` to override the [default configuration](config.default.json). It is also possible to pass the location of config file or directory with argument `--config` at startup. The configuration file must contain field `profiles` with a list of [profiles](#profiles) and it can contain additional [service settings](#service-settings).
 
 ~~~json
 {
@@ -184,6 +183,17 @@ Return a validation report. *This endpoint has not been specified nor implemente
 ### DELETE /reports/{id}
 
 Delete a validation report. *This endpoint has not been specified nor implemented yet.*
+
+## Library
+
+The validation can also be used as Python library but its API has not stabilized yet. The implementation is build from the following components:
+
+- `app.py` - a flask-based webservice
+- class `ValidationService` - validation engine as service with reports and downloads
+- class `Validator` - validation engine
+  - class `JSONSchemaValidator` - validate JSON against a JSON Schema
+  - class `XSDValidator` - validate XML against an XML Schema
+  - class `SchematronValidator` - validate XML against a Schematron Schema
 
 ## Contributing
 

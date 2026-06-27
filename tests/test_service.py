@@ -69,7 +69,7 @@ def test_config():
     with pytest.raises(Exception, match='Unkown check: {"foo": 3}'):
         ValidationService(profiles=[{"id": "x", "checks": [{"foo": 3}]}])
 
-    with pytest.raises(Exception, match='Profiles must have unique ids'):
+    with pytest.raises(Exception, match='Profile already defined: x'):
         ValidationService(profiles=[{"id": "x"}, {"id": "x"}])
 
     with pytest.raises(Exception, match="Unsupported schema language: 42"):
@@ -110,7 +110,8 @@ def test_schemas():
     assert service.validate('my-xml', data='<a><b id="x"/></a>') == [
         {'message': "attribute id='x': invalid literal for int() with base 10: 'x'",
          'position': {'xpath': '/a/b'}},
-        {'message': "The content of element 'a' is not complete. Tag 'b' expected.", 'position': {'xpath': '/a'}}
+        {'message': "The content of element 'a' is not complete. Tag 'b' expected.",
+         'position': {'xpath': '/a'}}
     ]
 
     # validate XML against an Schematron Schema

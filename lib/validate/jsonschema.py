@@ -19,4 +19,5 @@ class JSONSchemaValidator:
                 else:
                     pos += "/" + elem.replace("~", "~0").replace("/", "~1")
             pos = {"jsonpointer": pos}
-            raise ValidationError(err.message, pos)
+            return [ValidationError(err.message, pos)]
+        return []

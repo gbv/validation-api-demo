@@ -78,5 +78,7 @@ class ValidationService:
             if found:
                 errors.extend(found)
         except ValidationError as e:
+            # TODO: store in field "partial" of the report instead!
             errors.append(e)
+
         return [(e if isinstance(e, dict) else e.to_dict()) for e in errors]

@@ -1,5 +1,4 @@
 from .error import ValidationError
-from io import IOBase
 import xml.etree.ElementTree as ET
 from xml.parsers.expat import ErrorString
 
