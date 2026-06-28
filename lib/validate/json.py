@@ -1,5 +1,5 @@
 from json import loads, JSONDecodeError
-from .error import ValidationError
+from ..dvrf import ValidationError
 
 
 def parseJSON(data):

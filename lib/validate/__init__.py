@@ -1,5 +1,5 @@
 from .validator import Validator
-from .error import ValidationError
+from ..dvrf import ValidationError
 from .json import parseJSON
 from .jsonschema import JSONSchemaValidator
 from .xml import parseXML

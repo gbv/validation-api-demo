@@ -5,7 +5,7 @@ from .xml import parseXML
 from .jsonschema import JSONSchemaValidator
 from .xmlschema import XSDValidator
 from .schematron import SchematronValidator
-from .error import ValidationError
+from ..dvrf import ValidationError
 
 schema = json.load((Path(__file__).parent / 'profiles-schema.json').open())
 

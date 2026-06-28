@@ -1,4 +1,4 @@
-from .error import ValidationError
+from ..dvrf import ValidationError
 import xml.etree.ElementTree as ET
 from xml.parsers.expat import ErrorString
 

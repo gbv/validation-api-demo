@@ -4,6 +4,7 @@ from tempfile import TemporaryDirectory
 from lib import ValidationService, ValidationError
 from pathlib import Path
 
+
 def errors(service, profile, **kwargs):
     return service.validate(profile, **kwargs).to_dict()["errors"]
 
@@ -99,7 +100,7 @@ def test_schemas():
 
     assert errors(service, 'ap', data=json.dumps(config["profiles"])) == []
     assert errors(service, 'ap', url="http://example.org/valid.json") == [
-        {"message":"'id' is a required property", "position": {'jsonpointer': '/0'}}]
+        {"message": "'id' is a required property", "position": {'jsonpointer': '/0'}}]
 
     # validate XML against an XML Schema
 

@@ -1,5 +1,5 @@
-from .validate import Validator, ValidationError
-from .report import ValidationReport
+from .validate import Validator
+from .dvrf import ValidationError, ValidationReport
 from .urlcache import URLCache
 from pathlib import Path
 import validators

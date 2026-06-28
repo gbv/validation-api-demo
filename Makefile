@@ -14,7 +14,6 @@ all: # TODO: include integration test with backends
 doc:
 	rm -rf docs
 	.venv/bin/pdoc -o docs lib
-
 start:
 	@test -d files || mkdir files
 	@.venv/bin/python3 app.py

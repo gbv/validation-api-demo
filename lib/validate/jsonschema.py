@@ -1,4 +1,4 @@
-from .error import ValidationError
+from ..dvrf import ValidationError
 import json
 import jsonschema
 

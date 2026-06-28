@@ -1,4 +1,4 @@
-from .error import ValidationError
+from ..dvrf import ValidationError
 from pyschematron import DirectModeSchematronValidatorFactory
 from lxml import etree
 
