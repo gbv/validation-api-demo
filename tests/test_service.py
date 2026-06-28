@@ -1,8 +1,11 @@
 import pytest
 import json
 from tempfile import TemporaryDirectory
-from lib import ValidationService
+from lib import ValidationService, ValidationError
 from pathlib import Path
+
+def errors(service, profile, **kwargs):
+    return service.validate(profile, **kwargs).to_dict()["errors"]
 
 
 def test_config():
@@ -36,10 +39,10 @@ def test_config():
     with pytest.raises(Exception, match=r"Data must be string, bytes or IOBase"):
         service.validate('json', data=42)
 
-    assert service.validate('xml', data="\n") == [
+    assert errors(service, 'xml', data="\n") == [
         {'message': 'no element found', 'position': {'line': '2', 'linecol': '2:1'}}]
 
-    assert service.validate('xml', data="<root/>") == []
+    assert errors(service, 'xml', data="<root/>") == []
 
     with TemporaryDirectory() as path:
         service = ValidationService(files=path, profiles=[])
@@ -55,11 +58,11 @@ def test_config():
     path = Path(__file__).parent
     service = ValidationService(path / "example.json")
 
-    assert service.validate('json', url="http://example.org/") == [
+    assert errors(service, 'json', url="http://example.org/") == [
         {'message': 'Expecting value',
          'position': {'line': '1', 'linecol': '1:1', 'offset': '0'}}]
 
-    assert service.validate('json', url="http://example.org/valid.json") == []
+    assert errors(service, 'json', url="http://example.org/valid.json") == []
 
     # malformed configuration
 
@@ -80,9 +83,9 @@ def test_files():
     files = Path(__file__).parent / "files"
     service = ValidationService(profiles=[{"id": "xml", "checks": ["xml"]}], files=files)
 
-    assert service.validate('xml', file="valid.xml") == []
-    assert service.validate('xml', data=open(files / "valid.xml")) == []
-    assert service.validate('xml', data=open(files / "broken.xml")) == [
+    assert errors(service, 'xml', file="valid.xml") == []
+    assert errors(service, 'xml', data=open(files / "valid.xml")) == []
+    assert errors(service, 'xml', data=open(files / "broken.xml")) == [
         {'message': 'not well-formed (invalid token)', 'position': {'line': '1', 'linecol': '1:2'}}]
 
 
@@ -94,20 +97,18 @@ def test_schemas():
 
     # validate JSON against a JSON Schema
 
-    assert service.validate('ap', data=json.dumps(config["profiles"])) == []
-
-    assert service.validate('ap', url="http://example.org/valid.json") == [
-        {'message': "'id' is a required property", 'position': {'jsonpointer': '/0'}}]
+    assert errors(service, 'ap', data=json.dumps(config["profiles"])) == []
+    assert errors(service, 'ap', url="http://example.org/valid.json") == [
+        {"message":"'id' is a required property", "position": {'jsonpointer': '/0'}}]
 
     # validate XML against an XML Schema
 
-    assert service.validate('my-xml', data='<a><b id="1"/><b id="2"/></a>') == []
-
-    assert service.validate('my-xml', data="<a/>") == [{
+    assert errors(service, 'my-xml', data='<a><b id="1"/><b id="2"/></a>') == []
+    assert errors(service, 'my-xml', data="<a/>") == [{
         "message": "The content of element 'a' is not complete. Tag 'b' expected.",
         'position': {'xpath': '/a'}
     }]
-    assert service.validate('my-xml', data='<a><b id="x"/></a>') == [
+    assert errors(service, 'my-xml', data='<a><b id="x"/></a>') == [
         {'message': "attribute id='x': invalid literal for int() with base 10: 'x'",
          'position': {'xpath': '/a/b'}},
         {'message': "The content of element 'a' is not complete. Tag 'b' expected.",
@@ -116,7 +117,7 @@ def test_schemas():
 
     # validate XML against an Schematron Schema
 
-    assert service.validate('sch', data='<a id="1"></a>') == []
-    assert service.validate('sch', data='<a><b/></a>') == [
+    assert errors(service, 'sch', data='<a id="1"></a>') == []
+    assert errors(service, 'sch', data='<a><b/></a>') == [
         {'message': "There must be an id", 'position': {'xpath': '/a[1]/b[1]'}}
     ]

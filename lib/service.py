@@ -1,4 +1,5 @@
 from .validate import Validator, ValidationError
+from .report import ValidationReport
 from .urlcache import URLCache
 from pathlib import Path
 import validators
@@ -45,7 +46,7 @@ class ValidationService:
     def has(self, profile) -> bool:
         return profile in self.validator.profiles
 
-    def validate(self, profile, data=None, url=None, file=None):
+    def validate(self, profile, data=None, url=None, file=None) -> ValidationReport:
 
         if sum(1 for p in [data, file, url] if p is not None) != 1:
             raise ValueError("Expect exactely one query parameter: data, url, file")
@@ -72,13 +73,13 @@ class ValidationService:
             else:
                 raise ValueError("This service does not support passing data at server")
 
-        errors = []
+        report = ValidationReport()
         try:
             found = self.validator.execute(profile, data, file)
             if found:
-                errors.extend(found)
-        except ValidationError as e:
-            # TODO: store in field "partial" of the report instead!
-            errors.append(e)
+                report.add_errors(found)
+        except BaseException as e:
+            # TODO: map to ValidationError object and store in field "partial" of the report
+            pass
 
-        return [(e if isinstance(e, dict) else e.to_dict()) for e in errors]
+        return report

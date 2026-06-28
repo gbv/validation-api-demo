@@ -10,11 +10,15 @@ from .error import ValidationError
 schema = json.load((Path(__file__).parent / 'profiles-schema.json').open())
 
 
-def parse(data, fmt):
-    if fmt == "json":
-        parseJSON(data)
-    if fmt == "xml":
-        parseXML(data)
+def parseable(data, fmt):
+    try:
+        if fmt == "json":
+            parsed = parseJSON(data)
+        if fmt == "xml":
+            parsed = parseXML(data)
+    except ValidationError as e:
+        return [e]
+    return []
 
 
 def resolve(path, root):
@@ -77,8 +81,7 @@ class Validator(object):
     def compile(self, check):
         if type(check) is str:
             if check == "json" or check == "xml":
-                # FIXME: this should not throw on syntax errors!
-                return lambda data: parse(data, check)
+                return lambda data: parseable(data, check)
             else:
                 # TODO: allow to reference another profile
                 raise Exception(f"Unknown check: {check}")
@@ -90,12 +93,15 @@ class Validator(object):
             match check["schema"]:
                 case "json-schema":
                     validator = JSONSchemaValidator(file=schema)
+                    # FIXME: catch parseJSON errors
                     return lambda data: validator.validateJSON(parseJSON(data))
                 case "xsd":
                     validator = XSDValidator(schema)
+                    # FIXME: catch parseXML errors
                     return lambda data: validator.validateXML(parseXML(data))
                 case "schematron":
                     validator = SchematronValidator(schema)
+                    # TODO: test XML syntax errors
                     return lambda data: validator.validateXML(data)
                 # TODO: DTD validation with embedded DTD (with lxml)
                 case _:
