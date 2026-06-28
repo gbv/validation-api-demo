@@ -9,5 +9,6 @@ config/
 config.json
 *.tmp
 tmp/
+docs/
 htmlcov/
 .vscode/settings.json

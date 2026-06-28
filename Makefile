@@ -3,17 +3,17 @@ deps:
 	.venv/bin/pip3 install -r requirements.txt
 	.venv/bin/pip3 install -r requirements-dev.txt
 
-.PHONY: test
+.PHONY: test doc
 
 test:
 	@. .venv/bin/activate && coverage run --branch -m pytest -v -s && coverage report -m
 
-all: # TODO: include integration test with backends such as QPM
+all: # TODO: include integration test with backends
 	@. .venv/bin/activate && coverage run --branch -m pytest -v -s && coverage report -m && coverage html
 
-#.PHONY: docs
-#docs:
-#	mkdir -p docs; . .venv/bin/activate && jsonschema-markdown lib/validate/profiles-schema.json --no-footer --debug > docs/profiles-schema.md
+doc:
+	rm -rf docs
+	.venv/bin/pdoc -o docs lib
 
 start:
 	@test -d files || mkdir files

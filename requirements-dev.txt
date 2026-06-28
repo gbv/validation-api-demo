@@ -4,3 +4,4 @@ responses
 flake8
 autopep8
 coverage
+pdoc

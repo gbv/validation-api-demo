@@ -1,4 +1,4 @@
-# Validation API (demo)
+# Validation Service
 
 [![Docker image](https://github.com/gbv/validation-api-ws/actions/workflows/docker.yml/badge.svg)](https://github.com/orgs/gbv/packages/container/package/validation-api-ws)
 [![Test](https://github.com/gbv/validation-api-ws/actions/workflows/test.yml/badge.svg)](https://github.com/gbv/validation-api-ws/actions/workflows/test.yml)
@@ -189,7 +189,7 @@ Delete a validation report. *This endpoint has not been specified nor implemente
 The validation can also be used as Python library but its API has not stabilized yet. The implementation is build from the following components:
 
 - `app.py` - a flask-based webservice
-- class `ValidationService` - validation engine as service with reports and downloads
+- class `ValidationService` - validation engine as service with reports and downloads.
 - class `Validator` - validation engine
   - class `JSONSchemaValidator` - validate JSON against a JSON Schema
   - class `XSDValidator` - validate XML against an XML Schema
