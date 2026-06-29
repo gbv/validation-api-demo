@@ -1,7 +1,7 @@
 import pytest
 import json
 from tempfile import TemporaryDirectory
-from lib import ValidationService, ValidationError
+from lib import ValidationService
 from pathlib import Path
 
 

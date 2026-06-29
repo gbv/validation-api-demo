@@ -13,9 +13,9 @@ schema = json.load((Path(__file__).parent / 'profiles-schema.json').open())
 def parseable(data, fmt):
     try:
         if fmt == "json":
-            parsed = parseJSON(data)
+            parseJSON(data)
         if fmt == "xml":
-            parsed = parseXML(data)
+            parseXML(data)
     except ValidationError as e:
         return [e]
     return []

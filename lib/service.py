@@ -79,7 +79,7 @@ class ValidationService:
             if found:
                 report.add_errors(found)
         except BaseException as e:
-            # TODO: map to ValidationError object and store in field "partial" of the report
-            pass
+            # TODO: test this
+            report.partial = [ValidationError(e)]
 
         return report

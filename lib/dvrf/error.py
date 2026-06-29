@@ -1,11 +1,11 @@
 class ValidationError(Exception):
-    """An error as defined in [Data Validation Report Format](https://gbv.github.io/data-validation-report-format/#errors)."""
+    """An error as defined in Data Validation Report Format."""
 
-    def __init__(self, message, position=None):
+    def __init__(self, message: str, position=None):
         super().__init__(message)
         self.position = position
 
-    def wrapInFile(self, file):
+    def wrapInFile(self, file: str):
         message = f"{str(self)} in {file}"
         position = [{
             "dimension": "file",
@@ -14,7 +14,7 @@ class ValidationError(Exception):
         }]
         return ValidationError(message, position)
 
-    def to_dict(self):
+    def to_dict(self) -> dict:
         e = {"message": str(self)}
         if self.position:
             e["position"] = self.position

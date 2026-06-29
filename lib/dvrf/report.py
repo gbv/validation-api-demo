@@ -1,5 +1,5 @@
 class ValidationReport:
-    """A report as defined in [Data Validation Report Format](https://gbv.github.io/data-validation-report-format/#reports)."""
+    """A report as defined in Data Validation Report Format."""
 
     def __init__(self):
         self.errors = []

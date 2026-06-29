@@ -25,16 +25,15 @@ class URLCache(object):
         if meta_file.exists():
             return json.loads(meta_file.read_text(encoding="utf-8"))
 
-    def fetch(self, url: str, cached=True):
+    def fetch(self, url: str, cached=True) -> (bytes, dict):
         """Perform a HTTP Request or get URL from the cache."""
         hash = self.hash(url)
         body_file = self.dir / hash
         meta_file = self.dir / f"{hash}.json"
 
-        if cached and body_file.exists():
+        if cached and body_file.exists() and meta_file.exists():
+            body = body_file.read_bytes()
             meta = self.entry(url)
-            if meta:
-                body = body_file.read_bytes()
             return body_file, meta
 
         response = requests.get(url)

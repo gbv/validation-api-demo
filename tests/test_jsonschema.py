@@ -1,4 +1,4 @@
-from lib import ValidationError, JSONSchemaValidator
+from lib import JSONSchemaValidator
 
 
 def test_jsonschema():
