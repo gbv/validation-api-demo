@@ -28,12 +28,9 @@ jobs:
         with:
           python-version: '3.13'
       - name: Install dependencies
-        run: |
-          pip install -r requirements-dev.txt
-          ls .venv/bin
+        run: make deps
       - name: Generate API Documentation
-        run: |
-          make doc
+        run: make doc
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
         with:
