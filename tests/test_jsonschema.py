@@ -17,7 +17,7 @@ def test_jsonschema():
         schema["properties"][prop] = check
         validator = JSONSchemaValidator(schema)
 
-        errors = validator.validateJSON(data)
+        errors = validator.validate(data)
         assert len(errors) == 1 and errors[0].position == {"jsonpointer": pos}
 
     fail("foo", "/foo/0", {"type": "array", "items": {"type": "number"}})

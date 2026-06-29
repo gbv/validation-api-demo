@@ -30,6 +30,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r requirements-dev.txt
+          ls .venv/bin
       - name: Generate API Documentation
         run: |
           make doc

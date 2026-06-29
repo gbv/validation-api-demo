@@ -1,24 +1,13 @@
 import json
 from pathlib import Path
-from .json import parseJSON
-from .xml import parseXML
+from .json import JSONValidator
+from .xml import XMLValidator
 from .jsonschema import JSONSchemaValidator
 from .xmlschema import XSDValidator
 from .schematron import SchematronValidator
 from ..dvrf import ValidationError
 
 schema = json.load((Path(__file__).parent / 'profiles-schema.json').open())
-
-
-def parseable(data, fmt):
-    try:
-        if fmt == "json":
-            parseJSON(data)
-        if fmt == "xml":
-            parseXML(data)
-    except ValidationError as e:
-        return [e]
-    return []
 
 
 def resolve(path, root):
@@ -80,11 +69,14 @@ class Validator(object):
 
     def compile(self, check):
         if type(check) is str:
-            if check == "json" or check == "xml":
-                return lambda data: parseable(data, check)
+            if check == "json":
+                validator = JSONValidator()
+            elif check == "xml":
+                validator = XMLValidator()
             else:
                 # TODO: allow to reference another profile
                 raise Exception(f"Unknown check: {check}")
+            return lambda data: validator.validate(data)
 
         if "schema" in check and "location" in check:
             # TODO: support URL in addition to local file
@@ -93,13 +85,12 @@ class Validator(object):
             match check["schema"]:
                 case "json-schema":
                     validator = JSONSchemaValidator(file=schema)
-                    # FIXME: catch parseJSON errors
-                    return lambda data: validator.validateJSON(parseJSON(data))
+                    return lambda data: validator.validateJSON(data)
                 case "xsd":
                     validator = XSDValidator(schema)
-                    # FIXME: catch parseXML errors
-                    return lambda data: validator.validateXML(parseXML(data))
+                    return lambda data: validator.validateXML(data)
                 case "schematron":
+                    # FIXME: catch parseXML errors
                     validator = SchematronValidator(schema)
                     # TODO: test XML syntax errors
                     return lambda data: validator.validateXML(data)

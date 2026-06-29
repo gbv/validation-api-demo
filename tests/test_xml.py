@@ -1,5 +1,4 @@
-from lib import ValidationError, parseXML, XSDValidator
-import xml.etree.ElementTree as ET
+from lib import XMLValidator, XSDValidator
 from pathlib import Path
 import json
 
@@ -19,16 +18,13 @@ not_wellformed = [
 
 
 def test_wellformed():
-    assert isinstance(parseXML("<x/>"), ET.Element)
+    assert XMLValidator().validate("<x/>") == []
 
 
 def test_not_wellformed():
-    for (data, err) in not_wellformed:
-        try:
-            assert isinstance(parseXML(data), ET.Element)
-            assert 0 == "ValidationError should have been thrown!"  # pragma: no cover
-        except ValidationError as e:
-            assert e.to_dict() == err
+    for (data, expect) in not_wellformed:
+        errors = XMLValidator().validate(data)
+        assert len(errors) == 1 and errors[0].to_dict() == expect
 
 
 dir = Path(__file__).parent
@@ -41,6 +37,5 @@ def test_cases():
     validator = XSDValidator(dir / "schema.xsd")
     for test in cases:
         file = dir / test["file"]
-        xml = parseXML(file.read_text())
-        errors = validator.validateXML(xml)
+        errors = validator.validateXML(file.read_text())
         assert [e.to_dict() for e in errors] == test["errors"]

@@ -20,6 +20,8 @@ class SchematronValidator:
         self.validator = validator_factory.build()
 
     def validateXML(self, xml):
+        """Validate a parsed XML document."""
+
         # see <https://github.com/robbert-harms/pyschematron/issues/21>
         root = etree.fromstring(xml)
         xml = etree._ElementTree()

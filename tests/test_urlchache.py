@@ -21,7 +21,7 @@ def test_urlcache():
     with TemporaryDirectory() as path:
         cache = URLCache(path)
 
-        assert cache.entry(url) == None
+        assert cache.entry(url) is None
 
         with patch("lib.urlcache.requests.get") as mock_get:
             mock_get.return_value = response

@@ -1,13 +1,17 @@
-from lib import ValidationError, parseJSON
+from lib import JSONValidator
 
 
 def test_json():
-    def fail(data, error):
-        try:
-            parseJSON(data)
-            assert 0 == "ValidationError should have been thrown!"  # pragma: no cover
-        except ValidationError as e:
-            assert e.to_dict() == error
+    validator = JSONValidator()
+
+    doc, err = validator.parse("{}")
+    assert doc == {} and err == []
+
+    assert validator.validate("{}") == []
+
+    def fail(data, expect):
+        errors = validator.validate(data)
+        assert len(errors) == 1 and errors[0].to_dict() == expect
 
     fail("{", {
         "message": "Expecting property name enclosed in double quotes",

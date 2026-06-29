@@ -19,5 +19,14 @@
         }
       }
     ]
+  },
+  {
+    "file": "files/broken.xml",
+    "errors": [
+      {
+        "message": "not well-formed (invalid token)",
+        "position": { "line": "1",  "linecol": "1:2" }
+      }
+    ]
   }
 ]

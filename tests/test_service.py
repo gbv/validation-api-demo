@@ -104,6 +104,8 @@ def test_schemas():
 
     # validate XML against an XML Schema
 
+    assert errors(service, 'my-xml', data='<') == [
+        {'message': 'unclosed token', 'position': {'line': '1', 'linecol': '1:1'}}]
     assert errors(service, 'my-xml', data='<a><b id="1"/><b id="2"/></a>') == []
     assert errors(service, 'my-xml', data="<a/>") == [{
         "message": "The content of element 'a' is not complete. Tag 'b' expected.",
@@ -118,6 +120,9 @@ def test_schemas():
 
     # validate XML against an Schematron Schema
 
+    # TODO
+    # assert errors(service, 'sch', data='<') == [
+    #    {'message': 'unclosed token', 'position': {'line': '1', 'linecol': '1:1'}}]
     assert errors(service, 'sch', data='<a id="1"></a>') == []
     assert errors(service, 'sch', data='<a><b/></a>') == [
         {'message': "There must be an id", 'position': {'xpath': '/a[1]/b[1]'}}
