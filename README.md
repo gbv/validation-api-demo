@@ -190,6 +190,7 @@ The validation can also be used as Python library but its API has not stabilized
 
 - `app.py` - a flask-based webservice
 - class `ValidationService` - validation engine as service with reports and downloads.
+- class `ValidationRegistry` - collection of application profiles to validate data against
 - class `Validator` - validation engine
   - class `JSONSchemaValidator` - validate JSON against a JSON Schema
   - class `XSDValidator` - validate XML against an XML Schema

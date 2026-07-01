@@ -98,6 +98,8 @@ def test_schemas():
     service = ValidationService(config, root=path)
     assert service.profiles() == [{"id": "json"}, {"id": "ap"}, {"id": "my-xml"}, {"id": "sch"}]
 
+    # TODO: use validator-suite instead
+
     # validate JSON against a JSON Schema
 
     assert errors(service, 'ap', data=json.dumps(config["profiles"])) == []
@@ -123,9 +125,6 @@ def test_schemas():
 
     # validate XML against an Schematron Schema
 
-    # TODO
-    # assert errors(service, 'sch', data='<') == [
-    #    {'message': 'unclosed token', 'position': {'line': '1', 'linecol': '1:1'}}]
     assert errors(service, 'sch', data='<a id="1"></a>') == []
     assert errors(service, 'sch', data='<a><b/></a>') == [
         {'message': "There must be an id", 'position': {'xpath': '/a[1]/b[1]'}}

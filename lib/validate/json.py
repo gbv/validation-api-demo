@@ -1,11 +1,10 @@
 from json import loads, JSONDecodeError
-from ..dvrf import ValidationError
-from ..parser import AbstractParser
+from ..dvrf import ValidationError, Parser
 
 
-class JSONValidator(AbstractParser):
+class JSONParser(Parser):
 
-    def parse(self, data: str):
+    def parse(self, data: str) -> (any, list[ValidationError]):
         try:
             return loads(data), []
         except JSONDecodeError as e:

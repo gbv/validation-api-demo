@@ -1,8 +1,8 @@
-from lib import JSONValidator
+from lib import JSONParser
 
 
 def test_json():
-    validator = JSONValidator()
+    validator = JSONParser()
 
     doc, err = validator.parse("{}")
     assert doc == {} and err == []

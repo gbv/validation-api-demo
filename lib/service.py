@@ -1,4 +1,4 @@
-from .validate import Validator
+from .validate import ValidationRegistry
 from .dvrf import ValidationError, ValidationReport
 from .urlcache import URLCache
 from pathlib import Path
@@ -38,7 +38,7 @@ class ValidationService:
         else:
             self.urlcache = None
 
-        self.validator = Validator(**config)
+        self.validator = ValidationRegistry(**config)
 
     def profiles(self) -> list:
         return list(self.validator.profiles.values())

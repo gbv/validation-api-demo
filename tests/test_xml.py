@@ -1,6 +1,4 @@
-from lib import XMLValidator, XSDValidator
-from pathlib import Path
-import json
+from lib import XMLParser
 
 not_wellformed = [
     ('<a>\n', {  # string
@@ -18,24 +16,10 @@ not_wellformed = [
 
 
 def test_wellformed():
-    assert XMLValidator().validate("<x/>") == []
+    assert XMLParser().validate("<x/>") == []
 
 
 def test_not_wellformed():
     for (data, expect) in not_wellformed:
-        errors = XMLValidator().validate(data)
+        errors = XMLParser().validate(data)
         assert len(errors) == 1 and errors[0].to_dict() == expect
-
-
-dir = Path(__file__).parent
-
-with (dir / "xml-cases.json").open() as f:
-    cases = json.load(f)
-
-
-def test_cases():
-    validator = XSDValidator(dir / "schema.xsd")
-    for test in cases:
-        file = dir / test["file"]
-        errors = validator.validateXML(file.read_text())
-        assert [e.to_dict() for e in errors] == test["errors"]

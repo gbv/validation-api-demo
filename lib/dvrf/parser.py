@@ -1,8 +1,10 @@
-from abc import ABC, abstractmethod
-from ..dvrf import ValidationError
+from abc import abstractmethod
+from .error import ValidationError
+from .validator import Validator
 
 
-class AbstractParser(ABC):
+class Parser(Validator):
+    """A validator that can also parse a string into a document."""
 
     @abstractmethod
     def parse(self, doc: str) -> (any, list[ValidationError]):
@@ -10,6 +12,6 @@ class AbstractParser(ABC):
         pass  # pragma: no cover
 
     def validate(self, doc: str) -> list[ValidationError]:
-        """Return parsing errors."""
+        """Parse a document and return parsing errors (aka syntax errors)."""
         _, errors = self.parse(doc)
         return errors

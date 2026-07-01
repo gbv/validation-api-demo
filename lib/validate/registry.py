@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
-from .json import JSONValidator
-from .xml import XMLValidator
+from .json import JSONParser
+from .xml import XMLParser
 from .jsonschema import JSONSchemaValidator
 from .xmlschema import XSDValidator
 from .schematron import SchematronValidator
@@ -18,8 +18,8 @@ def resolve(path, root):
         return root / path
 
 
-class Validator(object):
-    """Combines a set of application profiles to validate data against."""
+class ValidationRegistry(object):
+    """A a set of application profiles to validate data against."""
 
     def __init__(self, profiles, **config):
         self.root = config.get("root")
@@ -41,7 +41,7 @@ class Validator(object):
         checks = profile.get("checks", [])
 
         # TODO: support reference to profile as check
-        self.checks[id] = [self.compile(c) for c in checks]
+        self.checks[id] = [self.create_validator(c) for c in checks]
 
         about = ['id', 'title', 'description', 'url', 'report']
         self.profiles[id] = {key: profile[key] for key in about if profile.get(key, False)}
@@ -67,16 +67,17 @@ class Validator(object):
             if errors is not None and len(errors):
                 return errors
 
-    def compile(self, check):
+    def create_validator(self, check):
+        validator = None
+
         if type(check) is str:
             if check == "json":
-                validator = JSONValidator()
+                validator = JSONParser()
             elif check == "xml":
-                validator = XMLValidator()
+                validator = XMLParser()
             else:
                 # TODO: allow to reference another profile
                 raise Exception(f"Unknown check: {check}")
-            return lambda data: validator.validate(data)
 
         if "schema" in check and "location" in check:
             # TODO: support URL in addition to local file
@@ -85,17 +86,15 @@ class Validator(object):
             match check["schema"]:
                 case "json-schema":
                     validator = JSONSchemaValidator(file=schema)
-                    return lambda data: validator.validateJSON(data)
                 case "xsd":
                     validator = XSDValidator(schema)
-                    return lambda data: validator.validateXML(data)
                 case "schematron":
-                    # FIXME: catch parseXML errors
                     validator = SchematronValidator(schema)
-                    # TODO: test XML syntax errors
-                    return lambda data: validator.validateXML(data)
                 # TODO: DTD validation with embedded DTD (with lxml)
                 case _:
                     raise Exception(f"Unsupported schema language: {check['schema']}")
+
+        if validator is not None:
+            return lambda data: validator.validate(data)
 
         raise Exception(f"Unkown check: {json.dumps(check)}")

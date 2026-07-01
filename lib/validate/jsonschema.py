@@ -1,15 +1,16 @@
-from ..dvrf import ValidationError
+from ..dvrf import Validator, ValidationError
 import json
 import jsonschema
-from .json import JSONValidator
+from .json import JSONParser
+from .document import DocumentValidator
 
 
-class JSONSchemaValidator:
+class JSONSchemaValidator(JSONParser, DocumentValidator):
 
     def __init__(self, schema=None, file=None):
         self.schema = json.load(file.open()) if file else schema
 
-    def validate(self, data):
+    def validate_document(self, data):
         """Validate a parsed JSON value."""
         try:
             jsonschema.validate(data, self.schema)
@@ -23,8 +24,3 @@ class JSONSchemaValidator:
             pos = {"jsonpointer": pos}
             return [ValidationError(err.message, pos)]
         return []
-
-    def validateJSON(self, doc: str):
-        """Validate a JSON document given as string."""
-        parsed, errors = JSONValidator().parse(doc)
-        return errors if errors else self.validate(parsed)

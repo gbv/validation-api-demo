@@ -2,9 +2,10 @@
 
 from .service import ValidationService
 from .dvrf import ValidationError, ValidationReport
-from .validate import Validator, JSONValidator, XMLValidator
+from .validate import ValidationRegistry, JSONParser, XMLParser
 from .validate import JSONSchemaValidator, XSDValidator, SchematronValidator
 
-__all__ = [ValidationService, Validator, ValidationError, ValidationReport,
-           JSONValidator, XMLValidator,
+__all__ = [ValidationError, ValidationReport,
+           ValidationRegistry, ValidationService,
+           JSONParser, XMLParser,
            JSONSchemaValidator, XSDValidator, SchematronValidator]
