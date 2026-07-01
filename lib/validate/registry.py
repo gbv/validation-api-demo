@@ -5,6 +5,7 @@ from .xml import XMLParser
 from .jsonschema import JSONSchemaValidator
 from .xmlschema import XSDValidator
 from .schematron import SchematronValidator
+from .crashing import CrashingValidator
 from ..dvrf import ValidationError
 
 schema = json.load((Path(__file__).parent / 'profiles-schema.json').open())
@@ -75,6 +76,8 @@ class ValidationRegistry(object):
                 validator = JSONParser()
             elif check == "xml":
                 validator = XMLParser()
+            elif check == "crash":
+                validator = CrashingValidator()
             else:
                 # TODO: allow to reference another profile
                 raise Exception(f"Unknown check: {check}")

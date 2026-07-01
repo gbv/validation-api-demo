@@ -26,5 +26,6 @@ fix:
 
 loc:
 	cloc $$(git ls-files)
+	cloc $$(git ls-files lib/) --quiet
 
 

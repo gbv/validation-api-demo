@@ -92,6 +92,17 @@ def test_files():
          'position': {'line': '1', 'linecol': '1:2'}}]
 
 
+def test_crashing():
+    profiles = [{"id": "crash", "checks": ["crash"]}]
+    service = ValidationService(profiles=profiles)
+
+    report = service.validate("crash", data="42")
+    assert report.to_dict() == {
+        "errors": [],
+        "partial": [{"message": "validator crashed"}]
+    }
+
+
 def test_schemas():
     path = Path(__file__).parent
     config = json.load((path / "example.json").open())

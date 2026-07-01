@@ -53,7 +53,7 @@ class ValidationService:
 
         if data is not None:
             if isinstance(data, io.IOBase):
-                data = data.read()  # TODO: support streams
+                data = data.read()  # TODO: support files and streams?
             if not (type(data) is str or type(data) is bytes):
                 raise ValueError("Data must be string, bytes or IOBase")
         elif url is not None:
@@ -79,7 +79,6 @@ class ValidationService:
             if found:
                 report.add_errors(found)
         except BaseException as e:
-            # TODO: test this
-            report.partial = [ValidationError(e)]
+            report.partial = [ValidationError(f"{e}")]
 
         return report

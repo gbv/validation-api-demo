@@ -5,14 +5,14 @@ class ValidationError(Exception):
         super().__init__(message)
         self.position = position
 
-    def wrapInFile(self, file: str):
-        message = f"{str(self)} in {file}"
-        position = [{
-            "dimension": "file",
-            "address": file,
-            "errors": [self.to_dict()]
-        }]
-        return ValidationError(message, position)
+#    def wrapInFile(self, file: str):
+#        message = f"{str(self)} in {file}"
+#        position = [{
+#            "dimension": "file",
+#            "address": file,
+#            "errors": [self.to_dict()]
+#        }]
+#        return ValidationError(message, position)
 
     def to_dict(self) -> dict:
         e = {"message": str(self)}

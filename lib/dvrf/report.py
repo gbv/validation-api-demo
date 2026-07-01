@@ -1,3 +1,7 @@
+def list_to_dict(objects):
+    return [(e if isinstance(e, dict) else e.to_dict()) for e in objects]
+
+
 class ValidationReport:
     """A report as defined in Data Validation Report Format."""
 
@@ -9,8 +13,7 @@ class ValidationReport:
         self.errors.extend(errors)
 
     def to_dict(self):
-        errors = [(e if isinstance(e, dict) else e.to_dict()) for e in self.errors]
-        e = {"errors": errors}
+        e = {"errors": list_to_dict(self.errors)}
         if self.partial:
-            e["partial"] = self.partial
+            e["partial"] = list_to_dict(self.partial)
         return e
