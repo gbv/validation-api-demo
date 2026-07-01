@@ -87,7 +87,8 @@ def test_api(client):
 
     client.fine('GET', '/xml/validate?data=<a/>')
     client.fine('GET', '/xml/validate?data=a', {'errors': [{
-        'message': 'syntax error', 'position': {'line': '1', 'linecol': '1:1'}}]})
+        'message': "Start tag expected, '<' not found",
+        'position': {'line': '1', 'linecol': '1:1'}}]})
 
 
 def test_validate_file(client):

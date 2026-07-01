@@ -24,7 +24,7 @@
     "file": "files/broken.xml",
     "errors": [
       {
-        "message": "not well-formed (invalid token)",
+        "message": "StartTag: invalid element name",
         "position": { "line": "1",  "linecol": "1:2" }
       }
     ]

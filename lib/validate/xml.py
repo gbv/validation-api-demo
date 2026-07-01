@@ -1,17 +1,19 @@
 from ..dvrf import ValidationError
-import xml.etree.ElementTree as ET
-from xml.parsers.expat import ErrorString
 from ..parser import AbstractParser
+import re
+
+from lxml import etree
 
 
 class XMLValidator(AbstractParser):
 
     def parse(self, data: str):
         try:
-            return ET.fromstring(data), []
-        except ET.ParseError as e:
-            line, col = e.position
-            pos = {"line": f"{line}"}
-            pos["linecol"] = f"{line}:{col + 1}"
-            code = e.code
-            return None, [ValidationError(ErrorString(code), pos)]
+            xml = etree.fromstring(data)
+            return xml, []
+        except etree.LxmlSyntaxError as e:
+            col = e.offset + 1
+            pos = {"line": f"{e.lineno}"}
+            pos["linecol"] = f"{e.lineno}:{col}"
+            msg = re.sub(', line [0-9]+, column [0-9]+$', '', e.msg)
+            return None, [ValidationError(msg, pos)]

@@ -4,13 +4,13 @@ import json
 
 not_wellformed = [
     ('<a>\n', {  # string
-        "message": "no element found",
+        "message": "Premature end of data in tag a line 1",
         "position": {"line": "2", "linecol": '2:1'}}),
     ('<a x="1"\n木="1" x="2"/>', {  # string
-        "message": 'duplicate attribute',
-        "position": {"line": "2", "linecol": "2:7"}}),
+        "message": 'Attribute x redefined',
+        "position": {"line": "2", "linecol": "2:12"}}),
     ('<?xml version="1.0"?>\n<木/>?'.encode("UTF-8"), {  # binary
-        "message": 'not well-formed (invalid token)',
+        "message": 'Extra content at the end of the document',
         "position": {"line": "2", "linecol": "2:5"}}),
 ]
 

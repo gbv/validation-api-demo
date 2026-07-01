@@ -41,7 +41,8 @@ def test_config():
         service.validate('json', data=42)
 
     assert errors(service, 'xml', data="\n") == [
-        {'message': 'no element found', 'position': {'line': '2', 'linecol': '2:1'}}]
+        {'message': "Start tag expected, '<' not found",
+         'position': {'line': '2', 'linecol': '2:1'}}]
 
     assert errors(service, 'xml', data="<root/>") == []
 
@@ -87,7 +88,8 @@ def test_files():
     assert errors(service, 'xml', file="valid.xml") == []
     assert errors(service, 'xml', data=open(files / "valid.xml")) == []
     assert errors(service, 'xml', data=open(files / "broken.xml")) == [
-        {'message': 'not well-formed (invalid token)', 'position': {'line': '1', 'linecol': '1:2'}}]
+        {'message': 'StartTag: invalid element name',
+         'position': {'line': '1', 'linecol': '1:2'}}]
 
 
 def test_schemas():
@@ -104,8 +106,9 @@ def test_schemas():
 
     # validate XML against an XML Schema
 
-    assert errors(service, 'my-xml', data='<') == [
-        {'message': 'unclosed token', 'position': {'line': '1', 'linecol': '1:1'}}]
+    assert errors(service, 'my-xml', data='\n<') == [
+        {'message': "StartTag: invalid element name",
+         'position': {'line': '2', 'linecol': '2:2'}}]
     assert errors(service, 'my-xml', data='<a><b id="1"/><b id="2"/></a>') == []
     assert errors(service, 'my-xml', data="<a/>") == [{
         "message": "The content of element 'a' is not complete. Tag 'b' expected.",
