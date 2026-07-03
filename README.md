@@ -116,10 +116,18 @@ The following schema languages are supported:
 - `json-schema` - [JSON Schema](https://json-schema.org/)
 - `xsd` - [XML Schema](https://www.w3.org/TR/xmlschema-0/)
 - `schematron` [Schematron](https://en.wikipedia.org/wiki/Schematron)
-- `avram` [Avram Schema](https://format.gbv.de/schema/avram/specification) *not implemented yet*
-- `pcre` Regular Expression *not implemented yet*
-- `shacl` [SHACL Shapes](https://www.w3.org/TR/shacl/) *not implemented yet*
-- `antlr` [ANTLR](https://www.antlr.org/) Grammar *not implemented yet*
+
+The following schema languages are planned to be supported:
+
+- `avram` [Avram Schema](https://format.gbv.de/schema/avram/specification)
+- `pcre` Regular Expression
+- `shacl` [SHACL Shapes](https://www.w3.org/TR/shacl/)
+- `ebnf`, `abnf`, `antlr` and/or similar grammars
+- `cddl` [CDDL](https://www.rfc-editor.org/info/rfc8610/) or a subset of it 
+
+#### Checks for testing
+
+- `crash` will always abort the validation and return an error in field `partial` of the [error report](https://gbv.github.io/data-validation-report-format/#reports).
 
 #### Script check
 
