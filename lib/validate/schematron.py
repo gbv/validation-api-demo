@@ -1,6 +1,6 @@
 from ..dvrf import ValidationError
 from .xml import XMLDocumentValidator
-from pyschematron import DirectModeSchematronValidatorFactory
+from pyschematron import create_validator
 
 nsmap = {'svrl': 'http://purl.oclc.org/dsdl/svrl'}
 
@@ -16,9 +16,7 @@ def error(failed_assert):
 class SchematronValidator(XMLDocumentValidator):
 
     def __init__(self, schema):
-        validator_factory = DirectModeSchematronValidatorFactory()
-        validator_factory.set_schema(schema)
-        self.validator = validator_factory.build()
+        self.validator = create_validator(schema)
 
     def validate_document(self, doc):
         """Validate a parsed XML document."""

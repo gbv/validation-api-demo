@@ -9,13 +9,7 @@ class XMLParser(Parser):
 
     def parse(self, data: str) -> (any, list[ValidationError]):
         try:
-            root = etree.fromstring(data)
-
-            # See <https://github.com/robbert-harms/pyschematron/issues/21> for reason
-            doc = etree._ElementTree()
-            doc._setroot(root)
-
-            return doc, []
+            return etree.fromstring(data), []
         except etree.LxmlSyntaxError as e:
             col = e.offset + 1
             pos = {"line": f"{e.lineno}"}
